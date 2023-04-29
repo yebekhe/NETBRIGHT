@@ -1,14 +1,14 @@
 [app]
 
 title = DPI Tunnel
-package.name = testapp
-package.domain = org.test
+package.name = dpitunnel
+package.domain = org.yebekhe
 
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 
 version = 0.1
-requirements = python3,kivy,requests
+requirements = python3,kivy,requests,os,json,socket,random,threading,copy,time,datetime,logging,pathlib
 
 orientation = portrait
 fullscreen = 0
