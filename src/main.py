@@ -3,7 +3,6 @@ import requests
 import json
 import socket
 import random
-import threading
 from pathlib import Path
 import copy
 import time
