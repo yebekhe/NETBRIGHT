@@ -4,11 +4,11 @@ title = DPI Tunnel
 package.name = dpitunnel
 package.domain = org.yebekhe
 
-source.dir = .
+source.dir = src
 source.include_exts = py,png,jpg,kv,atlas
 
 version = 0.1
-requirements = python3,kivy,requests,os,json,socket,random,threading,copy,time,datetime,logging,pathlib
+requirements = python3,kivy,requests,socket,random,threading,logging,pathlib
 
 orientation = portrait
 fullscreen = 0
