@@ -54,98 +54,114 @@ class MyBoxLayout(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.orientation = 'vertical'
-        self.spacing = 10
+        self.spacing = 20
+        self.padding = [20, 40]
 
         self.label = Label(
             text='DPI Tunnel',
             halign='center',
             valign='middle',
-            size_hint=(0.5, 0.2)
+            font_size=30,
+            size_hint=(None, None),
+            size=(400, 60),
+            pos_hint={'center_x': 0.5}
         )
-        self.label.pos_hint = {'x': 0.25}
         self.add_widget(self.label)
+
         self.local_port_input = TextInput(
-            hint_text='Enter Your Desired Local Port : ',
+            hint_text='Enter Your Desired Local Port:',
             halign='center',
-            padding_x=[20, 20],
-            size_hint=(0.5, 0.2)
+            padding=[20, 10],
+            font_size=16,
+            size_hint=(0.8, None),
+            height=50,
+            pos_hint={'center_x': 0.5}
         )
-        self.local_port_input.pos_hint = {'x': 0.25}
         self.add_widget(self.local_port_input)
-        self.local_port_input.bind(on_size=self.on_text_input_size)
+
         self.spinner = Spinner(
-            text='Select an option',
-            values=('Manual', 'Hamrah-Aval', "Irancell", "Rightel", "Mokhaberat", "HiWeb", "AsiaTech", "Shatel", "ParsOnline", "MobinNet", "Andishe-Sabz-Khazar", "Respina", "AfraNet", "Zi-Tel", "Pishgaman", "Araax", "SamanTel", "FanAva", "DidebanNet", "ApTel", "Fanap-Telecom", "RayNet"),
-            size_hint=(0.5, 0.2)
+            text='Select Your Operator',
+            values=('Manual', 'Hamrah-Aval', 'Irancell', 'Rightel', 'Mokhaberat', 'HiWeb', 'AsiaTech', 'Shatel', 'ParsOnline', 'MobinNet', 'Andishe-Sabz-Khazar', 'Respina', 'AfraNet', 'Zi-Tel', 'Pishgaman', 'Araax', 'SamanTel', 'FanAva', 'DidebanNet', 'ApTel', 'Fanap-Telecom', 'RayNet'),
+            font_size=16,
+            size_hint=(0.8, None),
+            height=50,
+            pos_hint={'center_x': 0.5}
         )
         self.spinner.bind(text=self.on_spinner_select)
-        self.spinner.pos_hint = {'x': 0.25}
         self.add_widget(self.spinner)
+
         self.cloudflare_ip_input = TextInput(
-            hint_text='Enter your Cloudflare IP',
+            hint_text='Enter Your Cloudflare IP ',
             halign='center',
-            padding_x=[20, 20],
-            size_hint=(None, None),
-            size=(0,0),
+            padding=[20, 10],
+            font_size=16,
+            size_hint=(0.8, None),
+            height=50,
+            pos_hint={'center_x': 0.5},
             opacity=0
         )
-        self.cloudflare_ip_input.pos_hint = {'x': 0.25}
-        self.cloudflare_ip_input.bind(on_size=self.on_text_input_size)
         self.add_widget(self.cloudflare_ip_input)
 
         self.config_port_input = TextInput(
-            hint_text='Enter Your Config Port : ',
+            hint_text='Enter Your Config Port:',
             halign='center',
-            padding_x=[20, 20],
-            size_hint=(0.5, 0.2)
+            padding=[20, 10],
+            font_size=16,
+            size_hint=(0.8, None),
+            height=50,
+            pos_hint={'center_x': 0.5}
         )
-        self.config_port_input.pos_hint = {'x': 0.25}
         self.add_widget(self.config_port_input)
-        self.config_port_input.bind(on_size=self.on_text_input_size)
-        self.button = Button(text='Start Tunnel!', size_hint=(0.5, 0.2))
-        self.button.pos_hint = {'x': 0.25}
-        self.button.background_color = (1, 0.5, 0, 1)
-        self.button.bind(on_press=self.on_button_press)
-        self.add_widget(self.button)
 
-    def on_text_input_size(self, instance, value):
-        self.local_port_input.padding_y = [(self.local_port_input.height - self.local_port_input.line_height) / 2, 0]
+        self.start_button = Button(
+            text='Start Tunnel',
+            font_size=18,
+            size_hint=(0.5, None),
+            height=50,
+            pos_hint={'center_x': 0.5}
+        )
+        self.start_button.background_color = (1, 0.5, 0, 1)
+        self.start_button.bind(on_press=self.on_start_button_press)
+        self.add_widget(self.start_button)
+
     def on_spinner_select(self, spinner, text):
         if text == 'Manual':
-            self.cloudflare_ip_input.size_hint = [0.5, 0.2]
-            self.cloudflare_ip_input.size = self.label.texture_size
-            self.cloudflare_ip_input.opacity=1
+            self.cloudflare_ip_input.opacity = 1
         else:
-            self.cloudflare_ip_input.size_hint = [None, None]
-            self.cloudflare_ip_input.size = [0,0]
-            self.cloudflare_ip_input.opacity=0
+            self.cloudflare_ip_input.opacity = 0
 
-    def on_button_press(self, instance):
-         global condition_of_tunnel
-         if condition_of_tunnel == False :
-            self.button.text = 'Stop Tunnel!'
-            threading.Thread(target=self.start_tunnel).start()
+    def on_start_button_press(self, instance):
+        global condition_of_tunnel
+        if condition_of_tunnel == False :
+            self.start_button.text = 'Stop Tunnel'
+            self.start_tunnel()
             condition_of_tunnel = True
-         else :
+        else :
             self.close_app()
-            return True
 
     def close_app(self):
-        popup = Popup(title="Confirmation", content=Label(text="Are you sure you want to exit?"), size_hint=(None, None), size=(400, 200))
-        yes_button = Button(text="Yes")
-        no_button = Button(text="No")
-        yes_button.bind(on_release=self.final_close_app) # Change this line
+        popup = Popup(
+            title='Confirmation',
+            content=Label(text='Are you sure you want to exit?'),
+            size_hint=(None, None),
+            size=(400, 200)
+        )
+        yes_button = Button(text='Yes')
+        no_button = Button(text='No')
+        yes_button.bind(on_release=self.final_close_app)
         no_button.bind(on_release=popup.dismiss)
-        popup_content = BoxLayout(orientation='vertical')
-        popup_content.add_widget(Label(text='Are you sure you want to close the app?'))
-        popup_content.add_widget(yes_button)
-        popup_content.add_widget(no_button)
+        popup_content = BoxLayout(orientation='vertical', spacing=20, padding=[20])
+        popup_content.add_widget(Label(text='Are you sure you want to close the app?', font_size=16))
+        button_box = BoxLayout(orientation='horizontal', spacing=20, size_hint=(1, None), height=50)
+        button_box.add_widget(yes_button)
+        button_box.add_widget(no_button)
+        popup_content.add_widget(button_box)
         popup.content = popup_content
         popup.open()
 
     def final_close_app(self, *args):
-        app = App.get_running_app().stop() # Change this line
-        Clock.schedule_once(lambda dt: app.stop(), 0.1)
+        app = App.get_running_app()
+        app.stop()
 
     def start_tunnel(self):
          if os.name == 'posix':
