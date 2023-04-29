@@ -4,7 +4,7 @@ title = DPI Tunnel
 package.name = dpitunnel
 package.domain = org.yebekhe
 
-source.dir = src
+source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 
 version = 0.1
