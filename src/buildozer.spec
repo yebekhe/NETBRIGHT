@@ -8,7 +8,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 
 version = 0.1
-requirements = python3,kivy,requests,socket,random,threading,logging,pathlib
+requirements = python3,kivy,requests,socket,threading,logging,pathlib
 
 orientation = portrait
 fullscreen = 0
