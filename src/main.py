@@ -3,13 +3,7 @@ import requests
 import json
 import socket
 import random
-import threading
-from pathlib import Path
-import copy
-import time
-import datetime
-import logging
-from logging.handlers import TimedRotatingFileHandler
+import time
 import threading
 import kivy
 from kivy.app import App
