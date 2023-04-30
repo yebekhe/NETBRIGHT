@@ -9,7 +9,7 @@ source.include_exts = py,png,jpg,kv,atlas
 icon.filename = icon.png
 
 version = 0.1
-requirements = python3,kivy,requests,urllib3,charset_normalizer==2.1.1,idna
+requirements = python3,kivy,requests,urllib3,charset_normalizer==2.1.1,idna,openssl,hostpython2
 
 orientation = portrait
 fullscreen = 0
