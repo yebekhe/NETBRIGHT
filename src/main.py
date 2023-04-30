@@ -1,110 +1,141 @@
-import kivy
 import requests
 import subprocess
 import json
 import random
-from kivy.app import App
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.uix.textinput import TextInput
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.spinner import Spinner
-from kivy.uix.popup import Popup
-from kivy.clock import Clock
+from kivymd.app import MDApp
+from kivymd.uix.label import MDLabel
+from kivymd.uix.textfield import MDTextField
+from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.menu import MDDropdownMenu
+from kivy.metrics import dp
+from kivy.lang.builder import Builder
+from kivy.properties import StringProperty
+from kivymd.uix.list import OneLineIconListItem
 
-class DPITunnel(BoxLayout):
+KV = '''
+<IconListItem>
+
+    IconLeftWidget:
+        icon: root.icon
+        width: 200
+
+MDScreen:
+    BoxLayout:
+        orientation: "vertical"
+        size_hint_y: None
+        height: root.height
+
+        Widget:
+            size_hint_y: None
+            height: (root.height - dp(48) * 6) / 2
+
+        GridLayout:
+            cols: 1
+            rows: 6
+            padding: "24dp"
+            spacing: "16dp"
+
+            MDLabel:
+                text: "DPI Tunnel"
+                halign: "center"
+                font_style: "H5"
+                theme_text_color: "Primary"
+
+            MDTextField:
+                id: local_port_input
+                hint_text: "Enter Your Desired Local Port:"
+                helper_text: "I'm going to Listen to this port from localhost or 127.0.0.1"
+                helper_text_mode: "persistent"
+
+            MDDropDownItem:
+                id: operator_dropdown
+                text: "Select Your Operator"
+                on_release: app.menu.open()
+
+            MDTextField:
+                id: cloudflare_ip_input
+                hint_text: "Enter Your Cloudflare IP"
+                helper_text: "Select Your Operator if you don't have any IP!"
+                helper_text_mode: "persistent"
+                opacity: 0
+                height: 0
+
+
+            MDTextField:
+                id: config_port_input
+                hint_text: "Enter Your Config Port:"
+                helper_text: "Set 443 If you're using GetAfreeNode"
+                helper_text_mode: "persistent"
+
+            MDRaisedButton:
+                id: start_button
+                text: "Start Tunnel"
+                md_bg_color: "orange"
+                elevation_normal: 8
+                on_press: app.start_tunnel()
+'''
+
+
+class IconListItem(OneLineIconListItem):
+    icon = StringProperty()
+
+class MainApp(MDApp):
     def __init__(self, **kwargs):
         self.condition_of_tunnel = False
         self.server = None
         super().__init__(**kwargs)
-        self.orientation = 'vertical'
-        self.spacing = 20
-        self.padding = [20, 40]
-
-        self.label = Label(
-            text='DPI Tunnel',
-            halign='center',
-            valign='middle',
-            font_size=30,
-            size_hint=(None, None),
-            size=(400, 60),
-            pos_hint={'center_x': 0.5}
+        self.screen = Builder.load_string(KV)
+        menu_items = [
+           {"text": "Manual", "on_release": lambda x="Manual": self.set_item(x) , "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "Hamrah-Aval", "on_release": lambda x="Hamrah-Aval": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "Irancell", "on_release": lambda x="Irancell": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "Rightel", "on_release": lambda x="Rightel": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "Mokhaberat", "on_release": lambda x="Mokhaberat": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "HiWeb", "on_release": lambda x="HiWeb": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "AsiaTech", "on_release": lambda x="AsiaTech": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "Shatel", "on_release": lambda x="Shatel": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "ParsOnline", "on_release": lambda x="ParsOnline": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "MobinNet", "on_release": lambda x="MobinNet": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "Andishe-Sabz-Khazar", "on_release": lambda x="Andishe-Sabz-Khazar": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "Respina", "on_release": lambda x="Respina": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "AfraNet", "on_release": lambda x="AfraNet": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "Zi-Tel", "on_release": lambda x="Zi-Tel": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "Pishgaman", "on_release": lambda x="Pishgaman": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "Araax", "on_release": lambda x="Araax": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "SamanTel", "on_release": lambda x="SamanTel": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "FanAva", "on_release": lambda x="FanAva": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "DidebanNet", "on_release": lambda x="DidebanNet": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "ApTel", "on_release": lambda x="ApTel": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "Fanap-Telecom", "on_release": lambda x="Fanap-Telecom": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
+           {"text": "RayNet", "on_release": lambda x="RayNet": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)}
+        ]
+        self.menu = MDDropdownMenu(
+            caller=self.screen.ids.operator_dropdown,
+            items=menu_items,
+            position="center",
+            width_mult=4
         )
-        self.add_widget(self.label)
+        self.menu.bind()
 
-        self.local_port_input = TextInput(
-            hint_text='Enter Your Desired Local Port:',
-            halign='center',
-            padding=[20, 10],
-            font_size=16,
-            size_hint=(0.8, None),
-            height=50,
-            pos_hint={'center_x': 0.5}
-        )
-        self.add_widget(self.local_port_input)
+    def build(self):
+        return self.screen
 
-        self.spinner = Spinner(
-            text='Select Your Operator',
-            values=('Manual', 'Hamrah-Aval', 'Irancell', 'Rightel', 'Mokhaberat', 'HiWeb', 'AsiaTech', 'Shatel', 'ParsOnline', 'MobinNet', 'Andishe-Sabz-Khazar', 'Respina', 'AfraNet', 'Zi-Tel', 'Pishgaman', 'Araax', 'SamanTel', 'FanAva', 'DidebanNet', 'ApTel', 'Fanap-Telecom', 'RayNet'),
-            font_size=16,
-            size_hint=(0.8, None),
-            height=50,
-            pos_hint={'center_x': 0.5}
-        )
-        self.spinner.bind(text=self.on_spinner_select)
-        self.add_widget(self.spinner)
-
-        self.cloudflare_ip_input = TextInput(
-            hint_text='Enter Your Cloudflare IP ',
-            halign='center',
-            padding=[0, 0],
-            font_size=16,
-            size_hint=(None, None),
-            height=0,
-            pos_hint={'center_x': 0.5},
-            opacity=0
-        )
-        self.add_widget(self.cloudflare_ip_input)
-
-        self.config_port_input = TextInput(
-            hint_text='Enter Your Config Port:',
-            halign='center',
-            padding=[20, 10],
-            font_size=16,
-            size_hint=(0.8, None),
-            height=50,
-            pos_hint={'center_x': 0.5},
-        )
-        self.add_widget(self.config_port_input)
-
-        self.start_button = Button(
-            text='Start Tunnel',
-            font_size=18,
-            size_hint=(0.5, None),
-            height=50,
-            pos_hint={'center_x': 0.5}
-        )
-        self.start_button.background_color = (1, 0.5, 0, 1)
-        self.start_button.bind(on_press=self.on_start_button_press)
-        self.add_widget(self.start_button)
-
-    def on_spinner_select(self, spinner, text):
-        if text == 'Manual':
-            self.cloudflare_ip_input.padding = [20, 10]
-            self.cloudflare_ip_input.height = 50
-            self.cloudflare_ip_input.size_hint = (0.8, None)
-            self.cloudflare_ip_input.opacity = 1
+    def set_item(self, text_item):
+        self.screen.ids.operator_dropdown.set_item(text_item)
+        self.cloudflare_input = self.screen.ids.cloudflare_ip_input
+        if text_item == "Manual":
+            self.cloudflare_input.opacity = 1
+            self.cloudflare_input.height = dp(56)
         else:
-            self.cloudflare_ip_input.padding = [0, 0]
-            self.cloudflare_ip_input.height = 0
-            self.cloudflare_ip_input.size_hint = (None, None)
-            self.cloudflare_ip_input.opacity = 0
+            self.cloudflare_input.opacity = 0
+            self.cloudflare_input.height = 0
+        self.menu.dismiss()
 
-    def on_start_button_press(self, instance):
+    def start_tunnel(self):
         if self.condition_of_tunnel == False :
              self.condition_of_tunnel = True
-             self.start_button.text = 'Stop Tunnel!'
-             user_operator_full = self.spinner.text
+             self.screen.ids.start_button.text = 'Stop Tunnel!'
+             user_operator_full = self.screen.ids.operator_dropdown.current_item
              operators = {
                  "Manual": "manual",
                  "Hamrah-Aval": "MCI",
@@ -132,9 +163,8 @@ class DPITunnel(BoxLayout):
              user_operator = operators.get(user_operator_full)
              response = requests.get("https://raw.githubusercontent.com/yebekhe/cf-clean-ip-resolver/main/list.json")
              json_data = response.content
-
              if user_operator == "manual":
-                 Cloudflare_IP = self.cloudflare_ip_input.text
+                 Cloudflare_IP = self.screen.ids.cloudflare_ip_input.text
              elif user_operator == "MCI":
                  Cloudflare_IP = choose_random_ip_with_operator(json_data, "MCI")
              elif user_operator == "MTN":
@@ -179,11 +209,11 @@ class DPITunnel(BoxLayout):
                  Cloudflare_IP = choose_random_ip_with_operator(json_data, "RYN")
              else:
                  Cloudflare_IP = '162.159.36.93'
-             self.server = subprocess.Popen(["python3","side_job.py",f"{self.local_port_input.text}",f"{Cloudflare_IP}",f"{self.config_port_input.text}"])
+             self.server = subprocess.Popen(["python3","side_job.py",f"{self.screen.ids.local_port_input.text}",f"{Cloudflare_IP}",f"{self.screen.ids.config_port_input.text}"])
         else :
-            self.condition_of_tunnel = False
-            self.start_button.text = 'Start Tunnel!'
-            self.server.terminate()
+             self.condition_of_tunnel = False
+             self.screen.ids.start_button.text = 'Start Tunnel!'
+             self.server.terminate()
 
 def choose_random_ip_with_operator(json_data, operator_code):
     data = json.loads(json_data)
@@ -199,10 +229,6 @@ def choose_random_ip_with_operator(json_data, operator_code):
     else:
         return None
 
-class MyApp(App):
-    def build(self):
-        return DPITunnel()
 
-if __name__ == '__main__':
-    MyApp().run()
 
+MainApp().run()
