@@ -3,7 +3,7 @@ import requests
 import json
 import socket
 import random
-import time
+import time
 import threading
 import kivy
 from kivy.app import App
@@ -13,17 +13,19 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.spinner import Spinner
 from kivy.uix.popup import Popup
-from kivy.clock import Clock
+from kivy.clock import Clock
 
-class MyBoxLayout(BoxLayout):
-  
-    Cloudflare_IP = "162.159.36.93"
-    listen_PORT = 2500
-    Cloudflare_port = 443
-    my_socket_timeout = 60
-    first_time_sleep = 0.01
-    accept_time_sleep = 0.01
-    condition_of_tunnel = False
+
+Cloudflare_IP = "162.159.36.93"
+listen_PORT = 2500
+Cloudflare_port = 443
+my_socket_timeout = 60
+first_time_sleep = 0.01
+accept_time_sleep = 0.01
+condition_of_tunnel = False
+
+
+class DPITunnel(BoxLayout):
 
     def choose_random_ip_with_operator(json_data, operator_code):
         # Decode JSON data
@@ -45,7 +47,7 @@ class MyBoxLayout(BoxLayout):
             return random_ip
         else:
             return None
-            
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.orientation = 'vertical'
@@ -88,10 +90,10 @@ class MyBoxLayout(BoxLayout):
         self.cloudflare_ip_input = TextInput(
             hint_text='Enter Your Cloudflare IP ',
             halign='center',
-            padding=[20, 10],
+            padding=[0, 0],
             font_size=16,
-            size_hint=(0.8, None),
-            height=50,
+            size_hint=(None, None),
+            height=0,
             pos_hint={'center_x': 0.5},
             opacity=0
         )
@@ -104,7 +106,7 @@ class MyBoxLayout(BoxLayout):
             font_size=16,
             size_hint=(0.8, None),
             height=50,
-            pos_hint={'center_x': 0.5}
+            pos_hint={'center_x': 0.5},
         )
         self.add_widget(self.config_port_input)
 
@@ -121,8 +123,14 @@ class MyBoxLayout(BoxLayout):
 
     def on_spinner_select(self, spinner, text):
         if text == 'Manual':
+            self.cloudflare_ip_input.padding = [20, 10]
+            self.cloudflare_ip_input.height = 50
+            self.cloudflare_ip_input.size_hint = (0.8, None)
             self.cloudflare_ip_input.opacity = 1
         else:
+            self.cloudflare_ip_input.padding = [0, 0]
+            self.cloudflare_ip_input.height = 0
+            self.cloudflare_ip_input.size_hint = (None, None)
             self.cloudflare_ip_input.opacity = 0
 
     def on_start_button_press(self, instance):
@@ -344,8 +352,7 @@ class ThreadedServer(object):
 
 class MyApp(App):
     def build(self):
-        return MyBoxLayout()
+        return DPITunnel()
 
 if __name__ == '__main__':
     MyApp().run()
-    
