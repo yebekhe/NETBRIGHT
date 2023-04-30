@@ -15,5 +15,7 @@ orientation = portrait
 fullscreen = 0
 android.archs = arm64-v8a, armeabi-v7a
 
+android.permissions = INTERNET
+
 [buildozer]
 log_level = 2
