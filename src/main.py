@@ -3,7 +3,13 @@ import requests
 import json
 import socket
 import random
+import threading
+from pathlib import Path
+import copy
 import time
+import datetime
+import logging
+from logging.handlers import TimedRotatingFileHandler
 import threading
 import kivy
 from kivy.app import App
@@ -13,38 +19,39 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.spinner import Spinner
 from kivy.uix.popup import Popup
-from kivy.clock import Clock
-
-Cloudflare_IP = "162.159.36.93"
-listen_PORT = 2500
-Cloudflare_port = 443
-my_socket_timeout = 60
-first_time_sleep = 0.01
-accept_time_sleep = 0.01
-condition_of_tunnel = False
-
-def choose_random_ip_with_operator(json_data, operator_code):
-    # Decode JSON data
-    data = json.loads(json_data)
-
-    # Search for IPv4 addresses with the specified operator code
-    matching_ips = []
-    for ipv4_address in data["ipv4"]:
-        if ipv4_address["operator"] == operator_code:
-            matching_ips.append(ipv4_address["ip"])
-
-    # Count how many IPv4 addresses have the operator code
-    matching_count = len(matching_ips)
-
-    # If there are any matching IPs, choose one at random and return it
-    if matching_count > 0:
-        random_index = random.randint(0, matching_count - 1)
-        random_ip = matching_ips[random_index]
-        return random_ip
-    else:
-        return None
+from kivy.clock import Clock
 
 class MyBoxLayout(BoxLayout):
+  
+    Cloudflare_IP = "162.159.36.93"
+    listen_PORT = 2500
+    Cloudflare_port = 443
+    my_socket_timeout = 60
+    first_time_sleep = 0.01
+    accept_time_sleep = 0.01
+    condition_of_tunnel = False
+
+    def choose_random_ip_with_operator(json_data, operator_code):
+        # Decode JSON data
+        data = json.loads(json_data)
+
+        # Search for IPv4 addresses with the specified operator code
+        matching_ips = []
+        for ipv4_address in data["ipv4"]:
+            if ipv4_address["operator"] == operator_code:
+                matching_ips.append(ipv4_address["ip"])
+
+        # Count how many IPv4 addresses have the operator code
+        matching_count = len(matching_ips)
+
+        # If there are any matching IPs, choose one at random and return it
+        if matching_count > 0:
+            random_index = random.randint(0, matching_count - 1)
+            random_ip = matching_ips[random_index]
+            return random_ip
+        else:
+            return None
+            
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.orientation = 'vertical'
@@ -128,7 +135,7 @@ class MyBoxLayout(BoxLayout):
         global condition_of_tunnel
         if condition_of_tunnel == False :
             self.start_button.text = 'Stop Tunnel'
-            self.start_tunnel()
+            threading.Thread(target=self.start_tunnel).start()
             condition_of_tunnel = True
         else :
             self.close_app()
@@ -334,12 +341,12 @@ class ThreadedServer(object):
                 client_sock.close()
                 return False
 
-def send_data_in_fragment(data , sock , L_fragment , fragment_sleep):
-    for i in range(0, len(data), L_fragment):
-        fragment_data = data[i:i+L_fragment]
-        # sock.send(fragment_data)
-        sock.sendall(fragment_data)
-        time.sleep(fragment_sleep)
+    def send_data_in_fragment(data , sock , L_fragment , fragment_sleep):
+        for i in range(0, len(data), L_fragment):
+            fragment_data = data[i:i+L_fragment]
+            # sock.send(fragment_data)
+            sock.sendall(fragment_data)
+            time.sleep(fragment_sleep)
 
 class MyApp(App):
     def build(self):
@@ -347,3 +354,4 @@ class MyApp(App):
 
 if __name__ == '__main__':
     MyApp().run()
+    
