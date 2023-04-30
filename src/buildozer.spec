@@ -6,6 +6,7 @@ package.domain = org.yebekhe
 
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
+icon.filename = icon.png
 
 version = 0.1
 requirements = python3,kivy,requests,urllib3,charset_normalizer
