@@ -15,6 +15,7 @@ jobs:
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
         with:
+          command: buildozer android debug --arch armeabi-v7a
           workdir: src
           buildozer_version: stable
 
