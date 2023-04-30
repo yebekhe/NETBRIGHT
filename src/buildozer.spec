@@ -13,7 +13,7 @@ requirements = python3,kivy,requests,urllib3,charset_normalizer
 
 orientation = portrait
 fullscreen = 0
-android.archs = arm64-v8a, armeabi-v7a, x86, x86_64
+android.archs = arm64-v8a, armeabi-v7a
 
 [buildozer]
 log_level = 2
