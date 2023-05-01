@@ -1,7 +1,10 @@
-import requests
 import subprocess
 import json
 import random
+import time
+from time import sleep
+from kivy.clock import Clock
+from kivy.network.urlrequest import UrlRequest
 from kivymd.app import MDApp
 from kivymd.uix.label import MDLabel
 from kivymd.uix.textfield import MDTextField
@@ -20,20 +23,23 @@ KV = '''
         width: 200
 
 MDScreen:
+    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+    height: sum(child.height for child in self.children)
+
     BoxLayout:
         orientation: "vertical"
         size_hint_y: None
         height: root.height
-
-        Widget:
-            size_hint_y: None
-            height: (root.height - dp(48) * 6) / 2
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
 
         GridLayout:
             cols: 1
             rows: 6
-            padding: "24dp"
-            spacing: "16dp"
+            padding: "26dp"
+            spacing: "10p"
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            adaptive_height: True
+            halign: "center"
 
             MDLabel:
                 text: "DPI Tunnel"
@@ -51,6 +57,7 @@ MDScreen:
                 id: operator_dropdown
                 text: "Select Your Operator"
                 on_release: app.menu.open()
+                pos_hint: {"center_x": 0.25}
 
             MDTextField:
                 id: cloudflare_ip_input
@@ -73,6 +80,7 @@ MDScreen:
                 md_bg_color: "orange"
                 elevation_normal: 8
                 on_press: app.start_tunnel()
+                pos_hint: {"center_x": 0.25}
 '''
 
 
@@ -161,61 +169,67 @@ class MainApp(MDApp):
                  "RayNet": "RYN"
              }
              user_operator = operators.get(user_operator_full)
-             response = requests.get("https://raw.githubusercontent.com/yebekhe/cf-clean-ip-resolver/main/list.json")
-             json_data = response.content
              if user_operator == "manual":
                  Cloudflare_IP = self.screen.ids.cloudflare_ip_input.text
              elif user_operator == "MCI":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "MCI")
+                 Cloudflare_IP = choose_random_ip_with_operator("MCI")
              elif user_operator == "MTN":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "MTN")
+                 Cloudflare_IP = choose_random_ip_with_operator("MTN")
              elif user_operator == "RTL":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "RTL")
+                 Cloudflare_IP = choose_random_ip_with_operator("RTL")
              elif user_operator == "MKH":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "MKH")
+                 Cloudflare_IP = choose_random_ip_with_operator("MKH")
              elif user_operator == "HWB":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "HWB")
+                 Cloudflare_IP = choose_random_ip_with_operator("HWB")
              elif user_operator == "AST":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "AST")
+                 Cloudflare_IP = choose_random_ip_with_operator("AST")
              elif user_operator == "SHT":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "SHT")
+                 Cloudflare_IP = choose_random_ip_with_operator("SHT")
              elif user_operator == "PRS":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "PRS")
+                 Cloudflare_IP = choose_random_ip_with_operator("PRS")
              elif user_operator == "MBT":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "MBT")
+                 Cloudflare_IP = choose_random_ip_with_operator("MBT")
              elif user_operator == "ASK":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "ASK")
+                 Cloudflare_IP = choose_random_ip_with_operator("ASK")
              elif user_operator == "RSP":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "RSP")
+                 Cloudflare_IP = choose_random_ip_with_operator("RSP")
              elif user_operator == "AFN":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "AFN")
+                 Cloudflare_IP = choose_random_ip_with_operator("AFN")
              elif user_operator == "ZTL":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "ZTL")
+                 Cloudflare_IP = choose_random_ip_with_operator("ZTL")
              elif user_operator == "PSM":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "PSM")
+                 Cloudflare_IP = choose_random_ip_with_operator("PSM")
              elif user_operator == "ARX":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "ARX")
+                 Cloudflare_IP = choose_random_ip_with_operator("ARX")
              elif user_operator == "SMT":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "SMT")
+                 Cloudflare_IP = choose_random_ip_with_operator("SMT")
              elif user_operator == "FNV":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "FNV")
+                 Cloudflare_IP = choose_random_ip_with_operator("FNV")
              elif user_operator == "DBN":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "DBN")
+                 Cloudflare_IP = choose_random_ip_with_operator("DBN")
              elif user_operator == "APT":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "APT")
+                 Cloudflare_IP = choose_random_ip_with_operator("APT")
              elif user_operator == "FNP":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "FNP")
+                 Cloudflare_IP = choose_random_ip_with_operator("FNP")
              elif user_operator == "RYN":
-                 Cloudflare_IP = choose_random_ip_with_operator(json_data, "RYN")
+                 Cloudflare_IP = choose_random_ip_with_operator("RYN")
              else:
                  Cloudflare_IP = '162.159.36.93'
+             print ("Your Cloudflare IP :"+str(Cloudflare_IP))
              self.server = subprocess.Popen(["python3","side_job.py",f"{self.screen.ids.local_port_input.text}",f"{Cloudflare_IP}",f"{self.screen.ids.config_port_input.text}"])
         else :
              self.condition_of_tunnel = False
              self.screen.ids.start_button.text = 'Start Tunnel!'
              self.server.terminate()
 
-def choose_random_ip_with_operator(json_data, operator_code):
+def choose_random_ip_with_operator(operator_code):
+
+    response = UrlRequest("https://raw.githubusercontent.com/yebekhe/cf-clean-ip-resolver/main/list.json")
+    while not response.is_finished:
+        sleep(1)
+        Clock.tick()
+
+    json_data = response.result
     data = json.loads(json_data)
     matching_ips = []
     for ipv4_address in data["ipv4"]:
@@ -228,7 +242,6 @@ def choose_random_ip_with_operator(json_data, operator_code):
         return random_ip
     else:
         return None
-
 
 
 MainApp().run()
