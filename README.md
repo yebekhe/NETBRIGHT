@@ -1,6 +1,6 @@
 # DPI Tunnel README
 
-DPI Tunnel is a Python desktop application that helps users bypass internet censorship and surveillance by creating an encrypted tunnel between the user's device and a server and with help of spliting client hello packet. 
+DPI Tunnel is a Python application that helps users bypass internet censorship and surveillance by creating an encrypted tunnel between the user's device and a server and with help of spliting client hello packet. 
 
 It uses Cloudflare IP addresses to avoid detection and supports multiple Iranian operators.
 
