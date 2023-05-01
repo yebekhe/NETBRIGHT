@@ -165,61 +165,59 @@ class MainApp(MDApp):
              }
              user_operator = operators.get(user_operator_full)
              if user_operator == "manual":
-                 Cloudflare_IP = self.screen.ids.cloudflare_ip_input.text
+                 self.Cloudflare_IP = self.screen.ids.cloudflare_ip_input.text
              elif user_operator == "MCI":
-                 Cloudflare_IP = choose_random_ip_with_operator("MCI")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("MCI")
              elif user_operator == "MTN":
-                 Cloudflare_IP = choose_random_ip_with_operator("MTN")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("MTN")
              elif user_operator == "RTL":
-                 Cloudflare_IP = choose_random_ip_with_operator("RTL")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("RTL")
              elif user_operator == "MKH":
-                 Cloudflare_IP = choose_random_ip_with_operator("MKH")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("MKH")
              elif user_operator == "HWB":
-                 Cloudflare_IP = choose_random_ip_with_operator("HWB")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("HWB")
              elif user_operator == "AST":
-                 Cloudflare_IP = choose_random_ip_with_operator("AST")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("AST")
              elif user_operator == "SHT":
-                 Cloudflare_IP = choose_random_ip_with_operator("SHT")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("SHT")
              elif user_operator == "PRS":
-                 Cloudflare_IP = choose_random_ip_with_operator("PRS")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("PRS")
              elif user_operator == "MBT":
-                 Cloudflare_IP = choose_random_ip_with_operator("MBT")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("MBT")
              elif user_operator == "ASK":
-                 Cloudflare_IP = choose_random_ip_with_operator("ASK")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("ASK")
              elif user_operator == "RSP":
-                 Cloudflare_IP = choose_random_ip_with_operator("RSP")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("RSP")
              elif user_operator == "AFN":
-                 Cloudflare_IP = choose_random_ip_with_operator("AFN")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("AFN")
              elif user_operator == "ZTL":
-                 Cloudflare_IP = choose_random_ip_with_operator("ZTL")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("ZTL")
              elif user_operator == "PSM":
-                 Cloudflare_IP = choose_random_ip_with_operator("PSM")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("PSM")
              elif user_operator == "ARX":
-                 Cloudflare_IP = choose_random_ip_with_operator("ARX")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("ARX")
              elif user_operator == "SMT":
-                 Cloudflare_IP = choose_random_ip_with_operator("SMT")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("SMT")
              elif user_operator == "FNV":
-                 Cloudflare_IP = choose_random_ip_with_operator("FNV")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("FNV")
              elif user_operator == "DBN":
-                 Cloudflare_IP = choose_random_ip_with_operator("DBN")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("DBN")
              elif user_operator == "APT":
-                 Cloudflare_IP = choose_random_ip_with_operator("APT")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("APT")
              elif user_operator == "FNP":
-                 Cloudflare_IP = choose_random_ip_with_operator("FNP")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("FNP")
              elif user_operator == "RYN":
-                 Cloudflare_IP = choose_random_ip_with_operator("RYN")
+                 self.Cloudflare_IP = choose_random_ip_with_operator("RYN")
              else:
-                 Cloudflare_IP = '162.159.36.93'
-             print ("Your Cloudflare IP :"+str(Cloudflare_IP))
-             result = subprocess.run(['pip', 'install', 'python3'], capture_output=True)
-             self.server = subprocess.Popen(["python3","side_job.py",f"{self.screen.ids.local_port_input.text}",f"{Cloudflare_IP}",f"{self.screen.ids.config_port_input.text}"])
+                 self.Cloudflare_IP = '162.159.36.93'
+             print ("Your Cloudflare IP :"+str(self.Cloudflare_IP))
+             self.server = subprocess.Popen(["python3","side_job.py",f"{self.screen.ids.local_port_input.text}",f"{self.Cloudflare_IP}",f"{self.screen.ids.config_port_input.text}"])
         else :
              self.condition_of_tunnel = False
              self.screen.ids.start_button.text = 'Start Tunnel!'
              self.server.terminate()
 
 def choose_random_ip_with_operator(operator_code):
-
     response = UrlRequest("https://raw.githubusercontent.com/yebekhe/cf-clean-ip-resolver/main/list.json")
     while not response.is_finished:
         sleep(1)
