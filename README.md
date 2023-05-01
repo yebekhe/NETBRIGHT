@@ -6,6 +6,10 @@ It uses Cloudflare IP addresses to avoid detection and supports multiple Iranian
 
 This project was built using Python and other tools such as Kivy and KivyMD.
 
+## Screenshot
+
+![DPI Tunnel](assets/Screenshot.png)
+
 ## Features
 
 * Easy-to-use graphical user interface
