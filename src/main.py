@@ -20,7 +20,7 @@ MDFloatLayout:
     MDLabel:
         halign: 'center'
         markup: True
-        text: "[u][size=48][b]DPI Tunnel[/b][/size][/u]"
+        text: "[u][size=48][b]DPI-TLS Tunnel[/b][/size][/u]"
         pos_hint: {'y': .45 , "center_x": .5}
 
     MDTextField:
@@ -211,7 +211,7 @@ class MainApp(MDApp):
              else:
                  Cloudflare_IP = '162.159.36.93'
              print ("Your Cloudflare IP :"+str(Cloudflare_IP))
-             self.server = subprocess.popen(["python","side_job.py",f"{self.screen.ids.local_port_input.text}",f"{Cloudflare_IP}",f"{self.screen.ids.config_port_input.text}"])
+             self.server = subprocess.Popen(["python","side_job.py",f"{self.screen.ids.local_port_input.text}",f"{Cloudflare_IP}",f"{self.screen.ids.config_port_input.text}"])
         else :
              self.condition_of_tunnel = False
              self.screen.ids.start_button.text = 'Start Tunnel!'
