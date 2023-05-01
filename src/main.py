@@ -16,71 +16,66 @@ from kivy.properties import StringProperty
 from kivymd.uix.list import OneLineIconListItem
 
 KV = '''
+MDFloatLayout:
+    MDLabel:
+        halign: 'center'
+        markup: True
+        text: "[u][size=48][b]DPI Tunnel[/b][/size][/u]"
+        pos_hint: {'y': .45 , "center_x": .5}
+
+    MDTextField:
+        id: local_port_input
+        halign: 'center'
+        hint_text: "Enter Your Desired Local Port:"
+        helper_text: "I'm going to Listen to this port from localhost or 127.0.0.1"
+        helper_text_mode: "persistent"
+        pos_hint: {'y': .7 , "center_x": .5}
+        size_hint_x: .6
+
+    MDDropDownItem:
+        id: operator_dropdown
+        halign: 'center'
+        text: "Select Your Operator"
+        on_release: app.menu.open()
+        pos_hint: {'y': .6 , "center_x": .5}
+        size_hint_x: .6
+
+    MDTextField:
+        id: cloudflare_ip_input
+        halign: 'center'
+        hint_text: "Enter Your Cloudflare IP"
+        helper_text: "Select Your Operator if you don't have any IP!"
+        helper_text_mode: "persistent"
+        opacity: 0
+        height: 0
+        pos_hint: {'y': .5 , "center_x": .5}
+        size_hint_x: .6
+
+    MDTextField:
+        id: config_port_input
+        halign: 'center'
+        hint_text: "Enter Your Config Port:"
+        helper_text: "Set 443 If you're using GetAfreeNode"
+        helper_text_mode: "persistent"
+        pos_hint: {'y': .4 , "center_x": .5}
+        size_hint_x: .6
+
+    MDRaisedButton:
+        id: start_button
+        halign: 'center'
+        text: "Start Tunnel"
+        md_bg_color: "orange"
+        elevation_normal: 8
+        on_press: app.start_tunnel()
+        pos_hint: {'y': .3 , "center_x": .5}
+        size_hint_x: .6
+
 <IconListItem>
 
     IconLeftWidget:
         icon: root.icon
         width: 200
 
-MDScreen:
-    pos_hint: {"center_x": 0.5, "center_y": 0.5}
-    height: sum(child.height for child in self.children)
-
-    BoxLayout:
-        orientation: "vertical"
-        size_hint_y: None
-        height: root.height
-        pos_hint: {"center_x": 0.5, "center_y": 0.5}
-
-        GridLayout:
-            cols: 1
-            rows: 6
-            padding: "26dp"
-            spacing: "10p"
-            pos_hint: {"center_x": 0.5, "center_y": 0.5}
-            adaptive_height: True
-            halign: "center"
-
-            MDLabel:
-                text: "DPI Tunnel"
-                halign: "center"
-                font_style: "H5"
-                theme_text_color: "Primary"
-
-            MDTextField:
-                id: local_port_input
-                hint_text: "Enter Your Desired Local Port:"
-                helper_text: "I'm going to Listen to this port from localhost or 127.0.0.1"
-                helper_text_mode: "persistent"
-
-            MDDropDownItem:
-                id: operator_dropdown
-                text: "Select Your Operator"
-                on_release: app.menu.open()
-                pos_hint: {"center_x": 0.25}
-
-            MDTextField:
-                id: cloudflare_ip_input
-                hint_text: "Enter Your Cloudflare IP"
-                helper_text: "Select Your Operator if you don't have any IP!"
-                helper_text_mode: "persistent"
-                opacity: 0
-                height: 0
-
-
-            MDTextField:
-                id: config_port_input
-                hint_text: "Enter Your Config Port:"
-                helper_text: "Set 443 If you're using GetAfreeNode"
-                helper_text_mode: "persistent"
-
-            MDRaisedButton:
-                id: start_button
-                text: "Start Tunnel"
-                md_bg_color: "orange"
-                elevation_normal: 8
-                on_press: app.start_tunnel()
-                pos_hint: {"center_x": 0.25}
 '''
 
 
@@ -133,7 +128,7 @@ class MainApp(MDApp):
         self.cloudflare_input = self.screen.ids.cloudflare_ip_input
         if text_item == "Manual":
             self.cloudflare_input.opacity = 1
-            self.cloudflare_input.height = dp(56)
+            self.cloudflare_input.height = dp(60)
         else:
             self.cloudflare_input.opacity = 0
             self.cloudflare_input.height = 0
@@ -216,7 +211,7 @@ class MainApp(MDApp):
              else:
                  Cloudflare_IP = '162.159.36.93'
              print ("Your Cloudflare IP :"+str(Cloudflare_IP))
-             self.server = subprocess.Popen(["python3","side_job.py",f"{self.screen.ids.local_port_input.text}",f"{Cloudflare_IP}",f"{self.screen.ids.config_port_input.text}"])
+             self.server = subprocess.popen(["python","side_job.py",f"{self.screen.ids.local_port_input.text}",f"{Cloudflare_IP}",f"{self.screen.ids.config_port_input.text}"])
         else :
              self.condition_of_tunnel = False
              self.screen.ids.start_button.text = 'Start Tunnel!'
