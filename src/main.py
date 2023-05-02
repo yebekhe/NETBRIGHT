@@ -27,7 +27,7 @@ MDFloatLayout:
         id: local_port_input
         halign: 'center'
         hint_text: "Enter Your Desired Local Port:"
-        helper_text: "I'm going to Listen to this port from localhost or 127.0.0.1"
+        helper_text: "Listening from localhost or 127.0.0.1 to this Port"
         helper_text_mode: "persistent"
         pos_hint: {'y': .7 , "center_x": .5}
         size_hint_x: .6
