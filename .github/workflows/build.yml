@@ -1,4 +1,4 @@
-name: Build
+name: Build and Release
 on:
   push:
     branches-ignore:
@@ -37,18 +37,43 @@ jobs:
           name: package
           path: ${{ steps.buildozer.outputs.filename }}
 
-      - name: Checkout
+  # Create release job. Creates a new release when Build job succeeds.
+  create-release:
+    name: Create Release
+    needs: build-android
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          path: data
-          ref: data # Branch name
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.11.3
-          architecture: x64
+      - name: Set up Git user
+        run: |
+          git config --global user.email "yebekhe@gmail.com"
+          git config --global user.name "YeBeKhe"
 
-      - name: Push binary to data branch
-        if: github.event_name == 'push'
-        run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this release:
+            - added feature A
+            - fixed bug B
+          draft: false
+          prerelease: false
+
+      - name: Upload artifact to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.build-android.outputs.artifact-path }}
+          asset_name: package.zip
+          asset_content_type: application/zip
