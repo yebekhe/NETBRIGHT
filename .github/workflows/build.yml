@@ -1,5 +1,15 @@
 name: Build
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore:
+      - data
+      - gh-pages
+    tags:
+      - '**'
+  pull_request:
+    branches-ignore:
+      - data
+      - gh-pages
 
 jobs:
   # Build job. Builds app for Android with Buildozer
@@ -10,11 +20,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          path: master
 
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
         with:
+          repository_root: master
           workdir: src
           buildozer_version: stable
 
@@ -23,3 +36,19 @@ jobs:
         with:
           name: package
           path: ${{ steps.buildozer.outputs.filename }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: data
+          ref: data # Branch name
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11.3
+          architecture: x64
+
+      - name: Push binary to data branch
+        if: github.event_name == 'push'
+        run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
