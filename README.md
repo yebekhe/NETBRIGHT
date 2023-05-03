@@ -16,6 +16,11 @@ This project was built using Python and other tools such as Kivy and KivyMD.
 * Supports manual and automatic selection of Cloudflare IP addresses
 * Supports multiple Iranian operators (Hamrah-Aval, Irancell, Rightel, Mokhaberat, HiWeb, AsiaTech, Shatel, ParsOnline, MobinNet, Andishe-Sabz-Khazar, Respina, AfraNet, Zi-Tel, Pishgaman, Araax, SamanTel, FanAva, DidebanNet, ApTel, Fanap-Telecom, RayNet)
 
+## Download
+You can download the latest version of DPI Tunnel from [data/bin](https://github.com/yebekhe/DPI-TLS-Tunnel/tree/data/bin) directory. 
+
+After downloading the file, install it and follow "How to Use" steps to start using the application.
+
 ## How to Use
 
 1. Enter your desired local port in the "Enter Your Desired Local Port" field.
