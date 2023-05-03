@@ -13,7 +13,9 @@ requirements = python3, kivy==master, requests, urllib3, charset_normalizer==2.1
 
 orientation = portrait
 fullscreen = 0
-android.archs = armeabi-v7a
+
+android.gradle_build_output = split_apks
+android.archs = armeabi-v7a, arm64-v8a, x86, x86_64
 
 android.permissions = INTERNET
 
