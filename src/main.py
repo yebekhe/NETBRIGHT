@@ -28,44 +28,46 @@ if os.name == 'posix':
     resource.setrlimit(resource.RLIMIT_NOFILE, (soft_limit, hard_limit))
 
 KV = '''
-MDFloatLayout:
-    MDLabel:
-        halign: 'center'
-        markup: True
-        text: "[color=#ff9800][size=60][b]DPI Tunnel[/b][/size][/color]"
-        pos_hint: {'center_y': .7, "center_x": .5}
+ScrollView:
+    MDFloatLayout:
 
-    MDTextField:
-        id: local_port_input
-        hint_text: "Enter your desired local port"
-        helper_text: "Listening from localhost or 127.0.0.1 to this port"
-        helper_text_mode: "on_focus"
-        pos_hint: {'center_y': .55, "center_x": .5}
-        size_hint_x: .8
+        MDLabel:
+            halign: 'center'
+            markup: True
+            text: "[color=#ff9800][size=60][b]DPI Tunnel[/b][/size][/color]"
+            pos_hint: {'center_y': .8, "center_x": .5}
 
-    MDDropDownItem:
-        id: operator_dropdown
-        text: "Select your operator"
-        on_release: app.menu.open()
-        pos_hint: {'center_y': .45, "center_x": .5}
-        size_hint_x: .8
+        MDTextField:
+            id: local_port_input
+            hint_text: "Enter your desired local port"
+            helper_text: "Listening from localhost or 127.0.0.1 to this port"
+            helper_text_mode: "on_focus"
+            pos_hint: {'center_y': .65, "center_x": .5}
+            size_hint_x: .8
 
-    MDTextField:
-        id: config_port_input
-        hint_text: "Enter your config port"
-        helper_text: "Set 443 if you're using GetAfreeNode"
-        helper_text_mode: "on_focus"
-        pos_hint: {'center_y': .35, "center_x": .5}
-        size_hint_x: .8
+        MDDropDownItem:
+            id: operator_dropdown
+            text: "Select your operator"
+            on_release: app.menu.open()
+            pos_hint: {'center_y': .55, "center_x": .5}
+            size_hint_x: .8
 
-    MDRaisedButton:
-        id: start_button
-        text: "Start Tunnel"
-        md_bg_color: "#ff9800"
-        elevation_normal: 8
-        on_press: app.start_tunnel()
-        pos_hint: {'center_y': .2, "center_x": .5}
-        size_hint_x: .8
+        MDTextField:
+            id: config_port_input
+            hint_text: "Enter your config port"
+            helper_text: "Set 443 if you're using GetAfreeNode"
+            helper_text_mode: "on_focus"
+            pos_hint: {'center_y': .45, "center_x": .5}
+            size_hint_x: .8
+
+        MDRaisedButton:
+            id: start_button
+            text: "Start Tunnel"
+            md_bg_color: "#ff9800"
+            elevation_normal: 8
+            on_press: app.start_tunnel()
+            pos_hint: {'center_y': .3, "center_x": .5}
+            size_hint_x: .8
 
 <IconListItem>:
     IconLeftWidget:
@@ -73,7 +75,6 @@ MDFloatLayout:
         width: dp(50)
 
 '''
-
 
 class IconListItem(OneLineIconListItem):
     icon = StringProperty()
@@ -142,6 +143,7 @@ class MainApp(MDApp):
                         self.fragment_sleep = 0.0025974025974026 * self.L_fragment
                         if data:
                             backend_ip = self.get_next_backend_ip()
+                            self.update_text(f'Using backend IP: {backend_ip}')
                             print(f'Using backend IP: {backend_ip}')  # Print the selected backend IP
                             backend_sock.connect((backend_ip, self.Cloudflare_port))
                             thread_down = threading.Thread(target=self.my_downstream, args=(backend_sock, client_sock))
@@ -222,14 +224,15 @@ class MainApp(MDApp):
         if self.condition_of_tunnel == False :
              self.condition_of_tunnel = True
              self.screen.ids.start_button.text = 'Stop Tunnel!'
+             self.update_text(f'Tunnel Started!')
              t = threading.Thread(target=self._start_tunnel)
              t.daemon = True
              t.start()
         else :
              self.condition_of_tunnel = False
              self.screen.ids.start_button.text = 'Start Tunnel!'
+             self.update_text(f'Tunnel Stopped!')
              print(f'Tunnel Stopped!')
-
 
     def _start_tunnel(self):
         while self.condition_of_tunnel == True :
@@ -264,6 +267,7 @@ class MainApp(MDApp):
             }
             self.user_operator = operators.get(user_operator_full)
             self.Cloudflare_port = int(self.screen.ids.config_port_input.text)
+            update_text(f'Proxy server listening on 127.0.0.1:{self.listen_PORT}')
             print(f'Proxy server listening on 127.0.0.1:{self.listen_PORT}')
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_sock:
                 server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -276,8 +280,5 @@ class MainApp(MDApp):
                         client_sock.settimeout(self.my_socket_timeout)
                         time.sleep(self.accept_time_sleep)
                         executor.submit(self.my_upstream, client_sock)
-
-
-
 
 MainApp().run()
