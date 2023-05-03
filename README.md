@@ -27,4 +27,4 @@ This project was built using Python and other tools such as Kivy and KivyMD.
 
 ## Credits
 
-This project was inspired by [GFW-knocker/gfw_resist_tls_proxy](https://github.com/GFW-knocker/gfw_resist_tls_proxy) and [Ali-Frh/CFuzzy](https://github.com/Ali-Frh/CFuzzy). Thank you to the creators of these projects for their contributions to internet freedom.
+This project was inspired by [GFW-knocker/gfw_resist_tls_proxy](https://github.com/GFW-knocker/gfw_resist_tls_proxy). Thanks to the creators of this project for their contributions to internet freedom.
