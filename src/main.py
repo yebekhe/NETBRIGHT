@@ -32,50 +32,45 @@ MDFloatLayout:
     MDLabel:
         halign: 'center'
         markup: True
-        text: "[u][size=48][b]DPI Tunnel[/b][/size][/u]"
-        pos_hint: {'y': .45 , "center_x": .5}
+        text: "[color=#ff9800][size=60][b]DPI Tunnel[/b][/size][/color]"
+        pos_hint: {'center_y': .7, "center_x": .5}
 
     MDTextField:
         id: local_port_input
-        halign: 'center'
-        hint_text: "Enter Your Desired Local Port:"
-        helper_text: "Listening from localhost or 127.0.0.1 to this Port"
-        helper_text_mode: "persistent"
-        pos_hint: {'y': .7 , "center_x": .5}
-        size_hint_x: .6
+        hint_text: "Enter your desired local port"
+        helper_text: "Listening from localhost or 127.0.0.1 to this port"
+        helper_text_mode: "on_focus"
+        pos_hint: {'center_y': .55, "center_x": .5}
+        size_hint_x: .8
 
     MDDropDownItem:
         id: operator_dropdown
-        halign: 'center'
-        text: "Select Your Operator"
+        text: "Select your operator"
         on_release: app.menu.open()
-        pos_hint: {'y': .6 , "center_x": .5}
-        size_hint_x: .6
+        pos_hint: {'center_y': .45, "center_x": .5}
+        size_hint_x: .8
 
     MDTextField:
         id: config_port_input
-        halign: 'center'
-        hint_text: "Enter Your Config Port:"
-        helper_text: "Set 443 If you're using GetAfreeNode"
-        helper_text_mode: "persistent"
-        pos_hint: {'y': .4 , "center_x": .5}
-        size_hint_x: .6
+        hint_text: "Enter your config port"
+        helper_text: "Set 443 if you're using GetAfreeNode"
+        helper_text_mode: "on_focus"
+        pos_hint: {'center_y': .35, "center_x": .5}
+        size_hint_x: .8
 
     MDRaisedButton:
         id: start_button
-        halign: 'center'
         text: "Start Tunnel"
-        md_bg_color: "orange"
+        md_bg_color: "#ff9800"
         elevation_normal: 8
         on_press: app.start_tunnel()
-        pos_hint: {'y': .3 , "center_x": .5}
-        size_hint_x: .6
+        pos_hint: {'center_y': .2, "center_x": .5}
+        size_hint_x: .8
 
-<IconListItem>
-
+<IconListItem>:
     IconLeftWidget:
         icon: root.icon
-        width: 200
+        width: dp(50)
 
 '''
 
