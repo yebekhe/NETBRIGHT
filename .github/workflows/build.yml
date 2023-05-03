@@ -53,20 +53,45 @@ jobs:
           git config --global user.email "yebekhe@gmail.com"
           git config --global user.name "YeBeKhe"
 
+      - name: Get latest release
+        id: latest_release
+        uses: peter-evans/get-latest-release@v1
+        with:
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.repository }}
+
+      - name: Extract release version
+        id: extract_release_version
+        run: echo "::set-output name=version::${{ steps.latest_release.outputs.tag_name }}"
+
+      - name: Extract release count
+        id: extract_release_count
+        run: |
+          releases_count=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases" | jq '. | length')
+          echo "::set-output name=count::$(($releases_count + 1))"
+
+      - name: Set release details
+        id: set_release_details
+        run: |
+          release_version="${{ steps.extract_release_version.outputs.version }}"
+          release_count="${{ steps.extract_release_count.outputs.count }}"
+          new_version="0.2.${{ steps.extract_release_count.outputs.count }}" # increment the version by 1
+
+          echo "::set-output name=tag::v${new_version}-beta.${release_count}"
+          echo "::set-output name=name::Beta Release ${new_version}.${release_count}"
+          echo "::set-output name=body::Changes in this release:\n- fixed bug"
+
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this release:
-            - added feature A
-            - fixed bug B
+          tag_name: ${{ steps.set_release_details.outputs.tag }}
+          release_name: ${{ steps.set_release_details.outputs.name }}
+          body: ${{ steps.set_release_details.outputs.body }}
           draft: false
-          prerelease: false
+          prerelease: true
 
       - name: Upload artifact to release
         uses: actions/upload-release-asset@v1
