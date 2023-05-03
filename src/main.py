@@ -143,7 +143,7 @@ class MainApp(MDApp):
                         self.fragment_sleep = 0.0025974025974026 * self.L_fragment
                         if data:
                             backend_ip = self.get_next_backend_ip()
-                            self.update_text(f'Using backend IP: {backend_ip}')
+
                             print(f'Using backend IP: {backend_ip}')  # Print the selected backend IP
                             backend_sock.connect((backend_ip, self.Cloudflare_port))
                             thread_down = threading.Thread(target=self.my_downstream, args=(backend_sock, client_sock))
@@ -224,14 +224,14 @@ class MainApp(MDApp):
         if self.condition_of_tunnel == False :
              self.condition_of_tunnel = True
              self.screen.ids.start_button.text = 'Stop Tunnel!'
-             self.update_text(f'Tunnel Started!')
+             
              t = threading.Thread(target=self._start_tunnel)
              t.daemon = True
              t.start()
         else :
              self.condition_of_tunnel = False
              self.screen.ids.start_button.text = 'Start Tunnel!'
-             self.update_text(f'Tunnel Stopped!')
+             
              print(f'Tunnel Stopped!')
 
     def _start_tunnel(self):
