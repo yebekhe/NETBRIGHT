@@ -22,7 +22,9 @@ from kivy.lang.builder import Builder
 from kivy.properties import StringProperty
 from kivymd.uix.list import OneLineIconListItem
 from kivymd.uix.bottomnavigation import MDBottomNavigation
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivymd.uix.bottomnavigation import MDBottomNavigationItem
+from kivy.uix.scrollview import ScrollView
+from kivymd.uix.floatlayout import MDFloatLayout
 
 if os.name == 'posix':
     import resource
@@ -31,55 +33,86 @@ if os.name == 'posix':
 
 KV = '''
 ScrollView:
-    MDFloatLayout:
-        id: float_layout
+    MDBottomNavigation:
+        MDBottomNavigationItem:
+            name: 'home'
+            text: 'Home'
+            icon: 'home'
 
-        MDLabel:
-            halign: 'center'
-            markup: True
-            text: "[color=#ff9800][size=60][b]DPI Tunnel[/b][/size][/color]"
-            pos_hint: {'center_y': .8, "center_x": .5}
+            MDFloatLayout:
+                id: float_layout
 
-        MDTextField:
-            id: local_port_input
-            hint_text: "Enter your desired local port"
-            helper_text: "Listening from localhost or 127.0.0.1 to this port"
-            helper_text_mode: "on_focus"
-            pos_hint: {'center_y': .65, "center_x": .5}
-            size_hint_x: .8
+                MDLabel:
+                    halign: 'center'
+                    markup: True
+                    text: "[color=#ff9800][b]DPI Tunnel[/b][/color]"
+                    pos_hint: {'center_y': .8, "center_x": .5}
+                    font_size: self.height * 0.1
+                    size_hint_x: .8
 
-        MDDropDownItem:
-            id: operator_dropdown
-            text: "Choose IP selection type"
-            on_release: app.menu.open()
-            pos_hint: {'center_y': .55, "center_x": .5}
-            size_hint_x: .8
+                MDTextField:
+                    id: local_port_input
+                    hint_text: "Local Port"
+                    helper_text: "Listening from 127.0.0.1 to this port"
+                    helper_text_mode: "on_focus"
+                    pos_hint: {'center_y': .65, "center_x": .5}
+                    size_hint_x: .8
 
-        MDTextField:
-            id: manual_ip_input
-            hint_text: "Enter your desired Cloudfalre IP"
-            helper_text: "I will use this ip for connection to clouflare"
-            helper_text_mode: "on_focus"
-            pos_hint: {'center_y': .45, "center_x": .5}
-            size_hint_x: .8
-            opacity: 0
+                MDDropDownItem:
+                    id: operator_dropdown
+                    text: "Connection Type"
+                    on_release: app.menu.open()
+                    pos_hint: {'center_y': .55, "center_x": .5}
+                    size_hint_x: .8
 
-        MDTextField:
-            id: config_port_input
-            hint_text: "Enter your config port"
-            helper_text: "Set 443 if you're using GetAfreeNode"
-            helper_text_mode: "on_focus"
-            pos_hint: {'center_y': .35, "center_x": .5}
-            size_hint_x: .8
+                MDTextField:
+                    id: manual_ip_input
+                    hint_text: "Cloudflare IP"
+                    helper_text: "I will use this IP for connection to Cloudflare"
+                    helper_text_mode: "on_focus"
+                    pos_hint: {'center_y': 0, "center_x": 0}
+                    size_hint: (None, None)
+                    opacity: 0
 
-        MDRaisedButton:
-            id: start_button
-            text: "Start Tunnel"
-            md_bg_color: "#ff9800"
-            elevation_normal: 8
-            on_press: app.start_tunnel()
-            pos_hint: {'center_y': .2, "center_x": .5}
-            size_hint_x: .8
+                MDTextField:
+                    id: config_port_input
+                    hint_text: "Config Port"
+                    helper_text: "Set 443 if you're using GetAfreeNode"
+                    helper_text_mode: "on_focus"
+                    pos_hint: {'center_y': .45, "center_x": .5}
+                    size_hint_x: .8
+
+                MDRaisedButton:
+                    id: start_button
+                    text: "Start Tunnel"
+                    md_bg_color: "#ff9800"
+                    elevation_normal: 8
+                    on_press: app.start_tunnel()
+                    pos_hint: {'center_y': .3, "center_x": .5}
+                    size_hint_x: .8
+
+        MDBottomNavigationItem:
+            name: 'how_to_use'
+            text: 'How to Use?'
+            icon: 'help'
+
+            MDFloatLayout:
+                id: float_layout
+
+                MDLabel:
+                    halign: 'center'
+                    markup: True
+                    text: "[color=#ff9800][size=60][b]How to Use?[/b][/size][/color]"
+                    pos_hint: {'center_y': .8, "center_x": .5}
+
+                MDTextField:
+                    id: how_to_use_textfield
+                    multiline: True
+                    readonly: True
+                    text: "1.Enter your desired port in the Local Port field.\\n2.Select your Connection Type the dropdown menu.\\n3.Enter your Cloudflare IP address if selected Manual in previous step.\\n4.Enter your Config Port in last field.\\n5.Click the Start Tunnel! button to start the tunnel.\\n6.To stop the tunnel, Close app completely."
+                    pos_hint: {'center_y': 0.5, "center_x": .5}
+                    size_hint: (0.9, None)
+                    height: dp(200)
 
 <IconListItem>:
     IconLeftWidget:
@@ -183,9 +216,17 @@ class MainApp(MDApp):
         self.screen.ids.operator_dropdown.set_item(text_item)
         self.menu.dismiss()
         if self.screen.ids.operator_dropdown.current_item == "Manual" :
+            self.screen.ids.manual_ip_input.pos_hint = {'center_y': .45, "center_x": .5}
+            self.screen.ids.manual_ip_input.size_hint = (0.8 , 0.115)
             self.screen.ids.manual_ip_input.opacity = 1
+            self.screen.ids.config_port_input.pos_hint = {'center_y': .35, "center_x": .5}
+            self.screen.ids.start_button.pos_hint = {'center_y': .2, "center_x": .5}
         else :
+            self.screen.ids.manual_ip_input.pos_hint = {'center_y': 0, "center_x": 0}
+            self.screen.ids.manual_ip_input.size_hint = (None , None)
             self.screen.ids.manual_ip_input.opacity = 0
+            self.screen.ids.config_port_input.pos_hint = {'center_y': .45, "center_x": .5}
+            self.screen.ids.start_button.pos_hint = {'center_y': .3, "center_x": .5}
 
     def get_next_backend_ip(self):
         if self.user_operator == "auto":
@@ -244,18 +285,17 @@ class MainApp(MDApp):
 
         print(f'Proxy server listening on 127.0.0.1:{self.listen_PORT}')
 
-        while self.condition_of_tunnel == True :
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_sock:
-                server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                server_sock.bind(('', self.listen_PORT))
-                server_sock.listen(128)
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_sock:
+            server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            server_sock.bind(('', self.listen_PORT))
+            server_sock.listen(128)
 
-                with ThreadPoolExecutor(max_workers=128) as executor:
-                    while True:
-                        client_sock, client_addr = server_sock.accept()
-                        client_sock.settimeout(self.my_socket_timeout)
-                        time.sleep(self.accept_time_sleep)
-                        executor.submit(self.my_upstream, client_sock)
+            with ThreadPoolExecutor(max_workers=128) as executor:
+                while True:
+                    client_sock, client_addr = server_sock.accept()
+                    client_sock.settimeout(self.my_socket_timeout)
+                    time.sleep(self.accept_time_sleep)
+                    executor.submit(self.my_upstream, client_sock)
 
 def send_data_in_fragment(data, sock):
     num_fragment = 67
