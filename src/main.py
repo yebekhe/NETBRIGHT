@@ -130,8 +130,8 @@ class MainApp(MDApp):
         super().__init__(**kwargs)
         self.screen = Builder.load_string(KV)
         menu_items = [
-           {"text": "Load Balance", "on_release": lambda x="Load Balance": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)},
-           {"text": "Manual", "on_release": lambda x="Manual": self.set_item(x), "viewclass": "IconListItem", "height": dp(56)}
+           {"text": "Load Balance", "on_release": lambda x="Load Balance": self.set_item(x), "viewclass": "IconListItem", "height": dp(56), "icon": "tunnel"},
+           {"text": "Manual", "on_release": lambda x="Manual": self.set_item(x), "viewclass": "IconListItem", "height": dp(56), "icon": "pencil-outline"}
         ]
         self.menu = MDDropdownMenu(
             caller=self.screen.ids.operator_dropdown,
