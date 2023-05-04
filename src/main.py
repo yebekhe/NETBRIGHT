@@ -6,8 +6,10 @@ import threading
 import os
 import sys
 import argparse
-import logging
-import multiprocessing
+import kivy
+import kivymd
+import configparser
+import dpitunnel
 from time import sleep
 from concurrent.futures import ThreadPoolExecutor
 from kivy.clock import Clock
@@ -25,11 +27,6 @@ from kivymd.uix.bottomnavigation import MDBottomNavigation
 from kivymd.uix.bottomnavigation import MDBottomNavigationItem
 from kivy.uix.scrollview import ScrollView
 from kivymd.uix.floatlayout import MDFloatLayout
-
-if os.name == 'posix':
-    import resource
-    soft_limit, hard_limit = resource.getrlimit(resource.RLIMIT_NOFILE)
-    resource.setrlimit(resource.RLIMIT_NOFILE, (soft_limit, hard_limit))
 
 KV = '''
 ScrollView:
@@ -147,72 +144,7 @@ class MainApp(MDApp):
     def build(self):
         return self.screen
 
-    def my_upstream(self, client_sock):
-        first_flag = True
-        backend_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        backend_sock.settimeout(self.my_socket_timeout)
-        backend_sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
-        while True:
-            try:
-                if( first_flag == True ):
-                    first_flag = False
-
-                    time.sleep(self.first_time_sleep)   # speed control + waiting for packet to fully recieve
-                    data = client_sock.recv(16384)
-
-                    if data:
-                        backend_ip = self.get_next_backend_ip()
-                        print(f'Using backend IP: {backend_ip}')  # Print the selected backend IP
-                        backend_sock.connect((backend_ip,self.Cloudflare_port))
-                        thread_down = threading.Thread(target = self.my_downstream , args = (backend_sock , client_sock) )
-                        thread_down.daemon = True
-                        thread_down.start()
-                        # backend_sock.sendall(data)
-                        send_data_in_fragment(data,backend_sock)
-
-                    else:
-                        raise Exception('cli syn close')
-
-                else:
-                    data = client_sock.recv(16384)
-                    if data:
-                        backend_sock.sendall(data)
-                    else:
-                        raise Exception('cli pipe close')
-
-            except Exception as e:
-                #print('upstream : '+ repr(e) )
-                time.sleep(2) # wait two second for another thread to flush
-                client_sock.close()
-                backend_sock.close()
-                return False
-
-    def my_downstream(self, backend_sock, client_sock):
-        first_flag = True
-        while True:
-            try:
-                if( first_flag == True ):
-                    first_flag = False
-                    data = backend_sock.recv(16384)
-                    if data:
-                        client_sock.sendall(data)
-                    else:
-                        raise Exception('backend pipe close at first')
-
-                else:
-                    data = backend_sock.recv(4096)
-                    if data:
-                        client_sock.sendall(data)
-                    else:
-                        raise Exception('backend pipe close')
-
-            except Exception as e:
-                #print('downstream '+backend_name +' : '+ repr(e))
-                time.sleep(2) # wait two second for another thread to flush
-                backend_sock.close()
-                client_sock.close()
-                return False
 
     def set_item(self, text_item):
         self.screen.ids.operator_dropdown.set_item(text_item)
@@ -230,13 +162,6 @@ class MainApp(MDApp):
             self.screen.ids.config_port_input.pos_hint = {'center_y': .45, "center_x": .5}
             self.screen.ids.start_button.pos_hint = {'center_y': .3, "center_x": .5}
 
-    def get_next_backend_ip(self):
-        if self.user_operator == "auto":
-            selected_ip = random.choice(self.automatic_ip)
-        else :
-            selected_ip = self.manual_selected_ip
-        return selected_ip
-
     def choose_random_ips(self):
         OP = ['MCI', 'MTN', 'RTL', 'MKH', 'HWB' , 'SHT']
         response = UrlRequest("https://raw.githubusercontent.com/yebekhe/cf-clean-ip-resolver/main/list.json")
@@ -253,73 +178,61 @@ class MainApp(MDApp):
 
         random_indexes = random.sample(range(len(all_ips)), 20)
         random_ips = [all_ips[idx] for idx in random_indexes]
-        return random_ips
+        return ', '.join(random_ips)
+    
+    def parse_args(self):
+        parser = argparse.ArgumentParser(description='Python Proxy')
+        parser.add_argument('--config', type=str, default='config.ini', help='Path to the configuration file')
+        return parser.parse_args()
+    
+    def write_config(self, config_path, user_operator, listen_PORT, Cloudflare_IPs, Cloudflare_port, my_socket_timeout, first_time_sleep, accept_time_sleep, condition_of_tunnel):
+        config = configparser.ConfigParser()
+        config.read(config_path)
+        
+        config.set('settings' , 'user_operator' , str(user_operator))
+        config.set('settings', 'listen_PORT', str(listen_PORT))
+        config.set('settings', 'Cloudflare_IP', str(Cloudflare_IPs))
+        config.set('settings', 'Cloudflare_port', str(Cloudflare_port))
+        config.set('settings', 'my_socket_timeout', str(my_socket_timeout))
+        config.set('settings', 'first_time_sleep', str(first_time_sleep))
+        config.set('settings', 'accept_time_sleep', str(accept_time_sleep))
+        config.set('settings', 'condition_of_tunnel' , str(condition_of_tunnel))
+
+        with open(config_path, 'w') as config_file:
+            config.write(config_file)
 
     def start_tunnel(self):
         if self.condition_of_tunnel == False :
-             self.condition_of_tunnel = True
-             self.screen.ids.start_button.text = 'Stop Tunnel!'
-             print(f'Tunnel Started!')
-             t = threading.Thread(target=self._start_tunnel)
-             t.daemon = True
-             t.start()
+            self.condition_of_tunnel = True
+            self.my_socket_timeout = 21
+            self.first_time_sleep = 0.1
+            self.accept_time_sleep = 0.01
+            self.listen_PORT = int(self.screen.ids.local_port_input.text)
+            user_operator_full = self.screen.ids.operator_dropdown.current_item
+            operators = {
+                "Load Balance" : "auto",
+                "Manual": "manual"
+            }
+            self.user_operator = operators.get(user_operator_full)
+            if self.user_operator == "auto":
+                self.Cloudflare_IPs = self.choose_random_ips()
+            else :
+                self.Cloudflare_IPs = str(self.screen.ids.manual_ip_input.text)
+            self.Cloudflare_port = int(self.screen.ids.config_port_input.text)
+            args = self.parse_args()
+            self.write_config(args.config, self.user_operator, self.listen_PORT, self.Cloudflare_IPs, self.Cloudflare_port, self.my_socket_timeout, self.first_time_sleep, self.accept_time_sleep, self.condition_of_tunnel)
+            self.screen.ids.start_button.text = 'Tunnel Started!'
+            print(f'Tunnel Started!')
+            t = threading.Thread(target=dpitunnel.main)
+            t.daemon = True
+            t.start()
         else :
-             self.condition_of_tunnel = False
-             self.screen.ids.start_button.text = 'Start Tunnel!'
-             time.sleep(2)
-             print(f'Tunnel Stopped!')
-             
+            self.condition_of_tunnel = False
+            args = self.parse_args()
+            self.write_config(args.config, '', '', '', '', self.my_socket_timeout, self.first_time_sleep, self.accept_time_sleep, self.condition_of_tunnel)
+            self.screen.ids.start_button.text = 'Close app to Terminate Tunnel!'
+            time.sleep(2)
+            print(f'Tunnel Stopped!')
 
-    def _start_tunnel(self):
-        self.my_socket_timeout = 21
-        self.first_time_sleep = 0.1
-        self.accept_time_sleep = 0.01
-        self.listen_PORT = int(self.screen.ids.local_port_input.text)
-        user_operator_full = self.screen.ids.operator_dropdown.current_item
-        operators = {
-            "Load Balance" : "auto",
-            "Manual": "manual"
-        }
-        self.user_operator = operators.get(user_operator_full)
-        if self.user_operator == "auto":
-            self.automatic_ip = self.choose_random_ips()
-        else :
-            self.manual_selected_ip = str(self.screen.ids.manual_ip_input.text)
-        self.Cloudflare_port = int(self.screen.ids.config_port_input.text)
-
-        print(f'Proxy server listening on 127.0.0.1:{self.listen_PORT}')
-
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_sock:
-            server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            server_sock.bind(('', self.listen_PORT))
-            max_queue_size = socket.SOMAXCONN // 2
-            print(f'max_queue_size: {max_queue_size}')
-            server_sock.listen(max_queue_size)
-            max_workers = multiprocessing.cpu_count() * 50
-            print(f'max_workers: {max_workers}')
-
-            while self.condition_of_tunnel == True:
-                with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                    client_sock, client_addr = server_sock.accept()
-                    client_sock.settimeout(self.my_socket_timeout)
-                    time.sleep(self.accept_time_sleep)
-                    executor.submit(self.my_upstream, client_sock)
-
-def send_data_in_fragment(data, sock):
-    num_fragment = 67
-    fragment_sleep = 0.001
-    L_data = len(data)
-    indices = random.sample(range(1,L_data-1), num_fragment-1)
-    indices.sort()
-    print('indices=',indices)
-    i_pre=0
-    for i in indices:
-        fragment_data = data[i_pre:i]
-        i_pre=i
-        sock.sendall(fragment_data)
-        time.sleep(fragment_sleep)
-    fragment_data = data[i_pre:L_data]
-    sock.sendall(fragment_data)
-    print('----------finish------------')
-
-MainApp().run()
+if __name__ == '__main__':
+    MainApp().run()
