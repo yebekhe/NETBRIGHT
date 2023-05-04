@@ -30,6 +30,7 @@ jobs:
         id: buildozer
         with:
           repository_root: master
+          command: buildozer android release
           workdir: src
           buildozer_version: stable
 
