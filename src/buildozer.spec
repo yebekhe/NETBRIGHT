@@ -1,7 +1,7 @@
 [app]
 
-title = DPI Tunnel
-package.name = dpitunnel
+title = NETBRIGHT
+package.name = netbright
 package.domain = org.yebekhe
 
 source.dir = .
