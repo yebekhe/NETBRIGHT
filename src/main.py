@@ -1,15 +1,15 @@
-import subprocess
 import json
 import random
 import time
 import socket
 import threading
-from concurrent.futures import ThreadPoolExecutor
 import os
 import sys
 import argparse
 import logging
+import multiprocessing
 from time import sleep
+from concurrent.futures import ThreadPoolExecutor
 from kivy.clock import Clock
 from kivy.network.urlrequest import UrlRequest
 from kivymd.app import MDApp
@@ -47,7 +47,7 @@ ScrollView:
                     markup: True
                     text: "[color=#ff9800][b]DPI Tunnel[/b][/color]"
                     pos_hint: {'center_y': .8, "center_x": .5}
-                    font_size: self.height * 0.1
+                    font_size: self.height * 0.08
                     size_hint_x: .8
 
                 MDTextField:
@@ -288,9 +288,13 @@ class MainApp(MDApp):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_sock:
             server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             server_sock.bind(('', self.listen_PORT))
-            server_sock.listen(128)
+            max_queue_size = socket.SOMAXCONN // 2
+            print(f'max_queue_size{max_queue_size}')
+            server_sock.listen(max_queue_size)
+            max_workers = multiprocessing.cpu_count() //2
+            print(f'max_workers{max_workers}')
 
-            with ThreadPoolExecutor(max_workers=128) as executor:
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
                 while self.condition_of_tunnel == True:
                     client_sock, client_addr = server_sock.accept()
                     client_sock.settimeout(self.my_socket_timeout)
