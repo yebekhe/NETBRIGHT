@@ -264,7 +264,7 @@ class MainApp(MDApp):
              self.condition_of_tunnel = False
              self.screen.ids.start_button.text = 'Start Tunnel!'
              print(f'Tunnel Stopped!')
-             self.restart()
+             
 
     def _start_tunnel(self):
         self.my_socket_timeout = 21
@@ -291,7 +291,7 @@ class MainApp(MDApp):
             server_sock.listen(128)
 
             with ThreadPoolExecutor(max_workers=128) as executor:
-                while True:
+                while self.condition_of_tunnel == True:
                     client_sock, client_addr = server_sock.accept()
                     client_sock.settimeout(self.my_socket_timeout)
                     time.sleep(self.accept_time_sleep)
