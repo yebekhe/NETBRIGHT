@@ -42,7 +42,7 @@ ScrollView:
                 MDLabel:
                     halign: 'center'
                     markup: True
-                    text: "[color=#ff9800][b]DPI Tunnel[/b][/color]"
+                    text: "[color=#ff9800][b]NETBRIGHT[/b][/color]"
                     pos_hint: {'center_y': .8, "center_x": .5}
                     font_size: self.height * 0.08
                     size_hint_x: .8
