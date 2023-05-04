@@ -5,7 +5,7 @@ package.name = dpitunnel
 package.domain = org.yebekhe
 
 source.dir = .
-source.include_exts = py,png,jpg,kv,atlas
+source.include_exts = py,png,jpg,kv,atlas,ini
 icon.filename = icon.png
 
 version = 0.1
