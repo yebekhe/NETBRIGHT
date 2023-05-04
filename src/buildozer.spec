@@ -15,6 +15,7 @@ orientation = portrait
 fullscreen = 0
 
 android.archs = armeabi-v7a
+android.build_mode = release
 
 presplash.filename = icon.png
 presplash_color = FFFFFF
