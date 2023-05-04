@@ -11,12 +11,6 @@ import logging
 import configparser
 import random
 
-# Check if the OS is Linux and set the maximum number of open files to 128000
-if os.name == 'posix':
-    print('os is linux')
-    import resource
-    resource.setrlimit(resource.RLIMIT_NOFILE, (127000, 128000))
-
 # Function to send data in fragments
 def send_data_in_fragment(data, sock):
     data_len = len(data)
