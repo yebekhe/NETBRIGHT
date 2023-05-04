@@ -102,8 +102,10 @@ ScrollView:
                 MDLabel:
                     halign: 'center'
                     markup: True
-                    text: "[color=#ff9800][size=60][b]How to Use?[/b][/size][/color]"
+                    text: "[color=#ff9800][b]How to Use?[/b][/color]"
+                    font_size: self.height * 0.08
                     pos_hint: {'center_y': .8, "center_x": .5}
+                    size_hint_x: .8
 
                 MDTextField:
                     id: how_to_use_textfield
@@ -257,12 +259,14 @@ class MainApp(MDApp):
         if self.condition_of_tunnel == False :
              self.condition_of_tunnel = True
              self.screen.ids.start_button.text = 'Stop Tunnel!'
+             print(f'Tunnel Started!')
              t = threading.Thread(target=self._start_tunnel)
              t.daemon = True
              t.start()
         else :
              self.condition_of_tunnel = False
              self.screen.ids.start_button.text = 'Start Tunnel!'
+             time.sleep(2)
              print(f'Tunnel Stopped!')
              
 
@@ -289,13 +293,13 @@ class MainApp(MDApp):
             server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             server_sock.bind(('', self.listen_PORT))
             max_queue_size = socket.SOMAXCONN // 2
-            print(f'max_queue_size{max_queue_size}')
+            print(f'max_queue_size: {max_queue_size}')
             server_sock.listen(max_queue_size)
-            max_workers = multiprocessing.cpu_count() //2
-            print(f'max_workers{max_workers}')
+            max_workers = multiprocessing.cpu_count() * 50
+            print(f'max_workers: {max_workers}')
 
-            with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                while self.condition_of_tunnel == True:
+            while self.condition_of_tunnel == True:
+                with ThreadPoolExecutor(max_workers=max_workers) as executor:
                     client_sock, client_addr = server_sock.accept()
                     client_sock.settimeout(self.my_socket_timeout)
                     time.sleep(self.accept_time_sleep)
