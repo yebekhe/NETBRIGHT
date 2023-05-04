@@ -20,7 +20,7 @@ presplash.filename = icon.png
 presplash_color = FFFFFF
 
 android.permissions = INTERNET, ACCESS_NETWORK_STATE, ACCESS_WIFI_STATE
-android.broadcast = org.yebekhe.dpitunnel.intent.action.MAIN
+android.broadcast = org.yebekhe.netbright.intent.action.MAIN
 android.service = True
 
 [buildozer]
