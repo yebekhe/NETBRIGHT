@@ -122,15 +122,6 @@ ScrollView:
         width: dp(50)
 
 '''
-host = ''
-port = None 
-listen_port = None
-user_operator = None
-clouflare_ip = None
-cloudflare_port = None
-my_socket_timeout = 21
-first_time_sleep = 0.1
-accept_time_sleep = 0.01
 
 class IconListItem(OneLineIconListItem):
     icon = StringProperty()
@@ -138,6 +129,7 @@ class IconListItem(OneLineIconListItem):
 class MainApp(MDApp):
     def __init__(self, **kwargs):
         self.condition_of_tunnel = False
+        self.server = None
         super().__init__(**kwargs)
         self.screen = Builder.load_string(KV)
         menu_items = [
@@ -155,6 +147,73 @@ class MainApp(MDApp):
     def build(self):
         return self.screen
 
+    def my_upstream(self, client_sock):
+        first_flag = True
+        backend_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        backend_sock.settimeout(self.my_socket_timeout)
+        backend_sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+
+        while True:
+            try:
+                if( first_flag == True ):
+                    first_flag = False
+
+                    time.sleep(self.first_time_sleep)   # speed control + waiting for packet to fully recieve
+                    data = client_sock.recv(16384)
+
+                    if data:
+                        backend_ip = self.get_next_backend_ip()
+                        print(f'Using backend IP: {backend_ip}')  # Print the selected backend IP
+                        backend_sock.connect((backend_ip,self.Cloudflare_port))
+                        thread_down = threading.Thread(target = self.my_downstream , args = (backend_sock , client_sock) )
+                        thread_down.daemon = True
+                        thread_down.start()
+                        # backend_sock.sendall(data)
+                        send_data_in_fragment(data,backend_sock)
+
+                    else:
+                        raise Exception('cli syn close')
+
+                else:
+                    data = client_sock.recv(16384)
+                    if data:
+                        backend_sock.sendall(data)
+                    else:
+                        raise Exception('cli pipe close')
+
+            except Exception as e:
+                #print('upstream : '+ repr(e) )
+                time.sleep(2) # wait two second for another thread to flush
+                client_sock.close()
+                backend_sock.close()
+                return False
+
+    def my_downstream(self, backend_sock, client_sock):
+        first_flag = True
+        while True:
+            try:
+                if( first_flag == True ):
+                    first_flag = False
+                    data = backend_sock.recv(16384)
+                    if data:
+                        client_sock.sendall(data)
+                    else:
+                        raise Exception('backend pipe close at first')
+
+                else:
+                    data = backend_sock.recv(4096)
+                    if data:
+                        client_sock.sendall(data)
+                    else:
+                        raise Exception('backend pipe close')
+
+            except Exception as e:
+                #print('downstream '+backend_name +' : '+ repr(e))
+                time.sleep(2) # wait two second for another thread to flush
+                backend_sock.close()
+                client_sock.close()
+                return False
+
     def set_item(self, text_item):
         self.screen.ids.operator_dropdown.set_item(text_item)
         self.menu.dismiss()
@@ -170,6 +229,13 @@ class MainApp(MDApp):
             self.screen.ids.manual_ip_input.opacity = 0
             self.screen.ids.config_port_input.pos_hint = {'center_y': .45, "center_x": .5}
             self.screen.ids.start_button.pos_hint = {'center_y': .3, "center_x": .5}
+
+    def get_next_backend_ip(self):
+        if self.user_operator == "auto":
+            selected_ip = random.choice(self.automatic_ip)
+        else :
+            selected_ip = self.manual_selected_ip
+        return selected_ip
 
     def choose_random_ips(self):
         OP = ['MCI', 'MTN', 'RTL', 'MKH', 'HWB' , 'SHT']
@@ -205,32 +271,27 @@ class MainApp(MDApp):
              
 
     def _start_tunnel(self):
-        global my_socket_timeout
-        global first_time_sleep
-        global accept_time_sleep
-        global listen_port
-        global user_operator
-        global clouflare_ip
-        global cloudflare_port
-
-        listen_port = int(self.screen.ids.local_port_input.text)
+        self.my_socket_timeout = 21
+        self.first_time_sleep = 0.1
+        self.accept_time_sleep = 0.01
+        self.listen_PORT = int(self.screen.ids.local_port_input.text)
         user_operator_full = self.screen.ids.operator_dropdown.current_item
         operators = {
             "Load Balance" : "auto",
             "Manual": "manual"
         }
-        user_operator = operators.get(user_operator_full)
-        if user_operator == "auto":
-            clouflare_ip = self.choose_random_ips()
+        self.user_operator = operators.get(user_operator_full)
+        if self.user_operator == "auto":
+            self.automatic_ip = self.choose_random_ips()
         else :
-            clouflare_ip = str(self.screen.ids.manual_ip_input.text)
-        cloudflare_port = int(self.screen.ids.config_port_input.text)
+            self.manual_selected_ip = str(self.screen.ids.manual_ip_input.text)
+        self.Cloudflare_port = int(self.screen.ids.config_port_input.text)
 
-        print(f'Proxy server listening on 127.0.0.1:{listen_port}')
+        print(f'Proxy server listening on 127.0.0.1:{self.listen_PORT}')
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_sock:
             server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            server_sock.bind(('', listen_port))
+            server_sock.bind(('', self.listen_PORT))
             max_queue_size = socket.SOMAXCONN // 2
             print(f'max_queue_size: {max_queue_size}')
             server_sock.listen(max_queue_size)
@@ -240,71 +301,9 @@ class MainApp(MDApp):
             while self.condition_of_tunnel == True:
                 with ThreadPoolExecutor(max_workers=max_workers) as executor:
                     client_sock, client_addr = server_sock.accept()
-                    client_sock.settimeout(my_socket_timeout)
-                    time.sleep(accept_time_sleep)
-                    executor.submit(my_upstream(client_sock))
-
-def get_next_backend_ip():
-        if user_operator == "auto":
-            selected_ip = random.choice(clouflare_ip)
-        else :
-            selected_ip = clouflare_ip
-        return selected_ip
-
-def my_upstream(client_sock):
-        first_flag = True
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as backend_sock:
-            backend_sock.settimeout(my_socket_timeout)
-            while True:
-                try:
-                    if first_flag:
-                        first_flag = False
-                        time.sleep(first_time_sleep)
-                        data = client_sock.recv(16384)
-                        if data:
-                            backend_ip = get_next_backend_ip()
-                            print(f'Using backend IP: {backend_ip}')  # Print the selected backend IP
-                            backend_sock.connect((backend_ip, cloudflare_port))
-                            thread_down = threading.Thread(target=my_downstream, args=(backend_sock, client_sock))
-                            thread_down.daemon = True
-                            thread_down.start()
-                            send_data_in_fragment(data, backend_sock)
-                        else:
-                            raise Exception('cli syn close')
-                    else:
-                        data = client_sock.recv(4096)
-                        if data:
-                            backend_sock.sendall(data)
-                        else:
-                            raise Exception('cli pipe close')
-                except Exception as e:
-                    logging.debug(f'[UPSTREAM] {repr(e)}')
-                    time.sleep(2)
-                    client_sock.close()
-                    return False
-            
-def my_downstream(backend_sock, client_sock):
-        first_flag = True
-        while True:
-            try:
-                if first_flag:
-                    first_flag = False
-                    data = backend_sock.recv(16384)
-                    if data:
-                        client_sock.sendall(data)
-                    else:
-                        raise Exception('backend pipe close at first')
-                else:
-                    data = backend_sock.recv(4096)
-                    if data:
-                        client_sock.sendall(data)
-                    else:
-                        raise Exception('backend pipe close')
-            except Exception as e:
-                logging.debug(f'[DOWNSTREAM] {repr(e)}')
-                time.sleep(2)
-                client_sock.close()
-                return False
+                    client_sock.settimeout(self.my_socket_timeout)
+                    time.sleep(self.accept_time_sleep)
+                    executor.submit(self.my_upstream, client_sock)
 
 def send_data_in_fragment(data, sock):
     num_fragment = 67
