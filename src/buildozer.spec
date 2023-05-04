@@ -17,7 +17,7 @@ fullscreen = 0
 android.archs = armeabi-v7a
 
 android.permissions = INTERNET, ACCESS_NETWORK_STATE, ACCESS_WIFI_STATE
-android.broadcast = org.yebekhe.dpitunnel
+android.broadcast = org.yebekhe.dpitunnel.intent.action.MAIN
 android.service = True
 
 [buildozer]
