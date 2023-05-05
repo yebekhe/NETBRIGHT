@@ -14,7 +14,7 @@ import random
 # Function to send data in fragments
 def send_data_in_fragment(data, sock):
     data_len = len(data)
-    L_fragment = random.randint(5, data_len // 3)
+    L_fragment = random.randint(5, data_len // 2)
     fragment_sleep = 0.0025974025974026 * L_fragment
     for i in range(0, len(data), L_fragment):
         fragment_data = data[i:i+L_fragment]
