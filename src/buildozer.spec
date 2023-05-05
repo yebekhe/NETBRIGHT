@@ -20,10 +20,6 @@ android.build_mode = release
 presplash.filename = icon.png
 presplash_color = FFFFFF
 
-android.signing.key = netbright.keystore
-android.signing.storepass = yebekheishere
-android.signing.keypass = yebekheishere
-
 android.permissions = INTERNET, ACCESS_NETWORK_STATE, ACCESS_WIFI_STATE
 android.broadcast = org.yebekhe.netbright.intent.action.MAIN
 android.service = True
