@@ -8,8 +8,8 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,ini
 icon.filename = icon.png
 
-version = 0.7
-requirements = python3, kivy==master, requests, urllib3, charset_normalizer==2.1.1, idna, openssl, https://github.com/kivymd/KivyMD/archive/master.zip
+version = 0.9
+requirements = python3, kivy==master, requests, urllib3, dnspython, charset_normalizer==2.1.1, idna, openssl, https://github.com/kivymd/KivyMD/archive/master.zip
 
 orientation = portrait
 fullscreen = 0
