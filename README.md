@@ -29,4 +29,6 @@ After downloading the file, install it and follow "How to Use" steps to start us
 
 ## Credits
 
-This project was inspired by [GFW-knocker/gfw_resist_tls_proxy](https://github.com/GFW-knocker/gfw_resist_tls_proxy). Thanks to the creators of this project for their contributions to internet freedom.
+This project was inspired by [GFW-knocker/gfw_resist_tls_proxy](https://github.com/GFW-knocker/gfw_resist_tls_proxy). 
+
+Thanks to the creators of this project for their contributions to internet freedom.
