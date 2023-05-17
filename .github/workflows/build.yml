@@ -3,54 +3,134 @@ on:
   push:
     branches-ignore:
       - data
-      - arm64-v8
-      - armeabi-v7
-      - gh-pages
     tags:
       - '**'
   pull_request:
     branches-ignore:
       - data
-      - gh-pages
 
 jobs:
-  # Build job. Builds app for Android with Buildozer
-  build-android:
-    name: Build for Android
+  build-android-null:
+    name: Build for Android (null)
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: master
 
-      - name: Build with Buildozer
+      - name: Build null
         uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
+        id: buildozernull
         with:
           repository_root: master
-          workdir: src
+          workdir: src/null
           buildozer_version: stable
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: package
-          path: ${{ steps.buildozer.outputs.filename }}
+          name: netbright_null.apk
+          path: ${{ steps.buildozernull.outputs.filename }}
+          retention-days: 5
 
+  build-android-armeabi-v7a:
+    name: Build for Android (armeabi-v7a)
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          path: data
-          ref: data # Branch name
+          path: master
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Build armeabi-v7a
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozerv7
         with:
-          python-version: 3.11.3
-          architecture: x64
+          repository_root: master
+          workdir: src/armeabi-v7a
+          buildozer_version: stable
 
-      - name: Push binary to data branch
-        if: github.event_name == 'push'
-        run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: netbright_armeabi-v7a.apk
+          path: ${{ steps.buildozerv7.outputs.filename }}
+          retention-days: 5
+
+  build-android-arm64-v8a:
+    name: Build for Android (arm64-v8a)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: master
+
+      - name: Build arm64-v8a
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozerv8
+        with:
+          repository_root: master
+          workdir: src/arm64-v8a
+          buildozer_version: stable
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: netbright_arm64-v8a.apk
+          path: ${{ steps.buildozerv8.outputs.filename }}
+          retention-days: 5
+
+  build-android-x86:
+    name: Build for Android (x86)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: master
+
+      - name: Build x86
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozerx86
+        with:
+          repository_root: master
+          workdir: src/x86
+          buildozer_version: stable
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: netbright_x86.apk
+          path: ${{ steps.buildozerx86.outputs.filename }}
+          retention-days: 5
+
+  build-android-x86-64:
+    name: Build for Android (x86_64)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: master
+
+      - name: Build x86-64
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozerx64
+        with:
+          repository_root: master
+          workdir: src/x86-64
+          buildozer_version: stable
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: netbright_x86_64.apk
+          path: ${{ steps.buildozerx64.outputs.filename }}
+          retention-days: 5
