@@ -16,8 +16,8 @@ condition_of_tunnel = "False"
 # Function to send data in fragments
 def send_data_in_fragment(data, sock):
     global random_fragment
+    data_len = len(data)
     if random_fragment == "down":
-        data_len = len(data)
         L_fragment = random.randint(5, data_len // 2)
         fragment_sleep = 0.0025974025974026 * L_fragment
     else:
