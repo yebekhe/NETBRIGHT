@@ -2,7 +2,7 @@
 
 title = NETBRIGHT
 package.name = netbright
-package.domain = org.yebekhetest
+package.domain = org.yebekhe
 
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,ini,ttf
