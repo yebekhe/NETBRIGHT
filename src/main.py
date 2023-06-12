@@ -439,6 +439,7 @@ class MainApp(MDApp):
         try:
             if self.condition_of_tunnel == 0:
                 self.condition_of_tunnel = 1
+                Fragmentor.Tunnel_State = 1
                 print(f"Tunnel Started!")
                 self.screen.get_screen("Main").ids.start_button.icon = "toggle-switch-outline"
                 self.app_start = 1 
@@ -449,6 +450,7 @@ class MainApp(MDApp):
                 self.send_notif("Tunnel Started!", f'Listening on 127.0.0.1:{self.screen.get_screen("Setting").ids.local_port_input.text}')
             else:
                 self.condition_of_tunnel = 0
+                Fragmentor.Tunnel_State = 0
                 self.t.join(.1)
                 self.screen.get_screen("Main").ids.start_button.icon = "toggle-switch-off-outline"
                 self.screen.get_screen("Main").ids.toggle_label.text = "Click on toggle to start Tunnel!"
