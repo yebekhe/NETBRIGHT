@@ -19,13 +19,8 @@ After downloading the file, install it and follow "How to Use" steps to start us
 
 ## How to Use
 
-1. Enter your desired local port in the "Enter Your Desired Local Port" field.
-2. Select your operator from the dropdown menu.
-3. Enter your Cloudflare IP address or leave it empty to use the automatically selected IP.
-4. Enter your config port in the "Enter Your Config Port" field. 
-5. Click the "Start Tunnel" button to start the tunnel.
-6. To stop the tunnel, close application completely.
-7. Edit your config and chnage address to 127.0.0.1 and change port to the Local port you entered in app.
+Check [HELP Page](https://telegra.ph/%D8%A2%D9%85%D9%88%D8%B2%D8%B4-%D9%86%D8%B1%D9%85-%D8%A7%D9%81%D8%B2%D8%A7%D8%B1-NETBRIGHT-05-19) for understanding the usage.
+In PC (Windows or Linux) download Project and open a terminal in src folder and run command `python3 main.py`
 
 ## Credits
 
