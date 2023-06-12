@@ -1,0 +1,305 @@
+#:import MDLabel kivymd.uix.label.MDLabel
+#:import MDTextField kivymd.uix.textfield.MDTextField
+#:import MDRaisedButton kivymd.uix.button.MDRaisedButton
+#:import MDDropdownMenu kivymd.uix.menu.MDDropdownMenu
+#:import dp kivy.metrics.dp
+#:import OneLineIconListItem kivymd.uix.list.OneLineIconListItem
+#:import ScrollView kivy.uix.scrollview.ScrollView
+#:import MDFloatLayout kivymd.uix.floatlayout.MDFloatLayout
+#:import MDBoxLayout kivymd.uix.boxlayout.MDBoxLayout
+#:import Screen kivy.uix.screenmanager.Screen
+#:import ScreenManager kivy.uix.screenmanager.ScreenManager
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+#:import Window kivy.core.window.Window
+
+TheScreen:
+    Main:
+    Setting:
+
+<Main>
+    name: "Main"
+
+    ScrollView:
+        scroll_type: ["bars", "content"]
+        MDGridLayout:
+            cols: 1
+            spacing: 0
+            size_hint_y: None
+            height: dp(700)
+
+            MDTopAppBar:
+                id: title_home
+                title: "NETBRIGHT"
+                right_action_items: [["cog", lambda x: app.callback("Setting"), "Open Setting"]]
+                pos_hint: {"center_y": .96, "center_x": .5}
+                md_bg_color: app.theme_cls.primary_color
+
+            AnchorLayout:
+                anchor_x: 'center'
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    adaptive_size: True
+
+                    MDIconButton:
+                        id: start_button
+                        icon: "toggle-switch-off-outline"
+                        theme_icon_color: "Custom"
+                        icon_color: app.theme_cls.primary_color
+                        icon_size: "150sp"
+                        on_press: app.start_tunnel()
+                        pos_hint: {"center_x": .5}
+
+                    MDLabel:
+                        id: toggle_label
+                        halign: 'center'
+                        markup: True
+                        font_name: "fonts/Vazir.ttf"
+                        text: "Click on toggle to start Tunnel!"
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.opposite_bg_light
+                        size_hint: None, None
+                        pos_hint: {"center_x": .5}
+                        size: dp(300),dp(50)
+
+
+<Setting>
+    name: "Setting"
+
+    ScrollView:
+        scroll_type: ["bars", "content"]
+        MDGridLayout:
+            cols: 1
+            spacing: 15
+            size_hint_y: None
+            height: dp(700)
+
+            MDTopAppBar:
+                id: title_setting
+                title: "SETTING"
+                left_action_items: [["arrow-left", lambda x: app.callback("Main")]]
+                pos_hint: {"center_y": .96, "center_x": .5}
+                md_bg_color: app.theme_cls.primary_color
+
+            AnchorLayout:
+                
+                anchor_x: 'center'
+                adaptive_size: True
+
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    adaptive_width: True
+
+                    MDLabel:
+                        id: light_dark_label
+                        halign: 'center'
+                        markup: True
+                        font_name: "fonts/Vazir.ttf"
+                        text: "Light/Dark"
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.opposite_bg_light
+                        size_hint: None, None
+                        pos_hint: {'center_y': 0.5}
+                        size: dp(100),dp(50)
+
+                    MDIconButton:
+                        icon: "theme-light-dark"
+                        theme_icon_color: "Custom"
+                        icon_color: app.theme_cls.primary_color
+                        icon_size: "45sp"
+                        on_press: app.light_dark()
+                        pos_hint: { "center_y": .5}
+
+            AnchorLayout:
+                
+                anchor_x: 'center'
+                adaptive_size: True
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    size_hint_x: None
+                    width: root.width * 0.8
+
+                    MDTextField:
+                        id: local_port_input
+                        hint_text: "Local Port"
+                        font_name: "fonts/Vazir.ttf"
+                        helper_text: "Listening from 127.0.0.1 to this port"
+                        helper_text_mode: "on_focus"
+                        text_color_normal:app.theme_cls.opposite_bg_light
+                        text_color_focus:app.theme_cls.primary_color
+                        hint_text_color_normal: app.theme_cls.opposite_bg_light
+                        hint_text_color_focus: app.theme_cls.primary_color
+                        helper_text_color_normal: app.theme_cls.opposite_bg_light
+                        helper_text_color_focus: app.theme_cls.primary_color
+                        background_color: app.theme_cls.bg_light
+                        line_color_normal: app.theme_cls.opposite_bg_light
+                        line_color_focus: app.theme_cls.primary_color
+                        pos_hint: {"center_y": .5}
+
+            AnchorLayout:
+                
+                anchor_x: 'center'
+                adaptive_size: True
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    adaptive_height: True
+                    size_hint_x: None
+                    width: root.width * 0.8
+                    spacing: 0
+
+                    MDDropDownItem:
+                        id: operator_dropdown
+                        text: "Connection Type"
+                        font_name: "fonts/Vazir.ttf"
+                        on_release: app.menu.open()
+                        text_color: app.theme_cls.opposite_bg_light
+                        md_bg_color: app.theme_cls.bg_light
+                        pos_hint: {'center_x': 0.5}
+
+                    MDTextField:
+                        id: manual_ip_input
+                        hint_text: "CDN IP/Domain"
+                        font_name_hint_text: "fonts/Vazir.ttf"
+                        helper_text: "You can enter multiple IPs sepreated with ',' or one Domain"
+                        helper_text_mode: "on_focus"
+                        text_color_normal:app.theme_cls.opposite_bg_light
+                        text_color_focus:app.theme_cls.primary_color
+                        hint_text_color_normal: app.theme_cls.opposite_bg_light
+                        hint_text_color_focus: app.theme_cls.primary_color
+                        helper_text_color_normal: app.theme_cls.opposite_bg_light
+                        helper_text_color_focus: app.theme_cls.primary_color
+                        background_color: app.theme_cls.bg_light
+                        line_color_normal: app.theme_cls.opposite_bg_light
+                        line_color_focus: app.theme_cls.primary_color
+                        opacity: 0
+
+            AnchorLayout:
+                
+                anchor_x: 'center'
+                adaptive_size: True
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    size_hint_x: None
+                    width: root.width * 0.8
+
+                    MDTextField:
+                        id: config_port_input
+                        hint_text: "Configs Port"
+                        font_name: "fonts/Vazir.ttf"
+                        helper_text: "Enter Port of your Config, e.g. 443"
+                        helper_text_mode: "on_focus"
+                        text_color_normal:app.theme_cls.opposite_bg_light
+                        text_color_focus:app.theme_cls.primary_color
+                        hint_text_color_normal: app.theme_cls.opposite_bg_light
+                        hint_text_color_focus: app.theme_cls.primary_color
+                        helper_text_color_normal: app.theme_cls.opposite_bg_light
+                        helper_text_color_focus: app.theme_cls.primary_color
+                        background_color: app.theme_cls.bg_light
+                        line_color_normal: app.theme_cls.opposite_bg_light
+                        line_color_focus: app.theme_cls.primary_color
+                        pos_hint: { "center_y": .5}
+
+            AnchorLayout:
+                
+                anchor_x: 'center'
+                adaptive_size: True
+
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    size_hint_x: None
+                    width: root.width * 0.5
+                    spacing: 0
+
+                    MDLabel:
+                        id: random_fragment_label
+                        halign: 'center'
+                        markup: True
+                        font_name: "fonts/Vazir.ttf"
+                        text: "Random Fragment"
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.opposite_bg_light
+                        width: root.width * 0.1
+                        pos_hint: { "center_y": .5}
+
+                    MDCheckbox:
+                        id: random_fragment_check
+                        color_inactive:app.theme_cls.opposite_bg_light
+                        color_active:app.theme_cls.primary_color
+                        size_hint: None, None
+                        size: dp(48), dp(48)
+                        pos_hint: { "center_y": .5}
+
+            AnchorLayout:
+                
+                anchor_x: 'center'
+                adaptive_size: True
+
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    adaptive_width: True
+                    spacing: 10
+
+                    MDTextField:
+                        id: socket_timeout_input
+                        hint_text: "Socket Timeout"
+                        font_name: "fonts/Vazir.ttf"
+                        helper_text: "20-100"
+                        helper_text_mode: "on_focus"
+                        text_color_normal:app.theme_cls.opposite_bg_light
+                        text_color_focus:app.theme_cls.primary_color
+                        hint_text_color_normal: app.theme_cls.opposite_bg_light
+                        hint_text_color_focus: app.theme_cls.primary_color
+                        helper_text_color_normal: app.theme_cls.opposite_bg_light
+                        helper_text_color_focus: app.theme_cls.primary_color
+                        background_color: app.theme_cls.bg_light
+                        line_color_normal: app.theme_cls.opposite_bg_light
+                        line_color_focus: app.theme_cls.primary_color
+                        size_hint: None, None
+                        size: root.width * 0.35 , dp(65)
+
+
+                    MDTextField:
+                        id: socket_listen_input
+                        hint_text: "Socket Listen Queue"
+                        helper_text: ">= 128"
+                        font_name: "fonts/Vazir.ttf"
+                        helper_text_mode: "on_focus"
+                        text_color_normal:app.theme_cls.opposite_bg_light
+                        text_color_focus:app.theme_cls.primary_color
+                        hint_text_color_normal: app.theme_cls.opposite_bg_light
+                        hint_text_color_focus: app.theme_cls.primary_color
+                        helper_text_color_normal: app.theme_cls.opposite_bg_light
+                        helper_text_color_focus: app.theme_cls.primary_color
+                        background_color: app.theme_cls.bg_light
+                        line_color_normal: app.theme_cls.opposite_bg_light
+                        line_color_focus: app.theme_cls.primary_color
+                        size_hint: None, None
+                        size: root.width * 0.35, dp(65)
+
+            AnchorLayout:
+                
+                anchor_x: 'center'
+                adaptive_size: True
+
+                MDBoxLayout:
+                    adaptive_width: True
+                    padding: [0,0,0,50]
+
+                    MDRaisedButton:
+                        id: save_button
+                        text: "Save Settings"
+                        font_name: "fonts/Vazir.ttf"
+                        text_color: app.theme_cls.bg_light
+                        md_bg_color: app.theme_cls.primary_color
+                        elevation_normal: 8
+                        on_press: app.save_config()
+                        pos_hint: {'center_x': .5}
+
+
+<IconListItem>:
+    IconLeftWidgetWithoutTouch:
+        icon: root.icon
+        width: dp(0)
