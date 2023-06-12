@@ -20,6 +20,7 @@ After downloading the file, install it and follow "How to Use" steps to start us
 ## How to Use
 
 Check [HELP Page](https://telegra.ph/%D8%A2%D9%85%D9%88%D8%B2%D8%B4-%D9%86%D8%B1%D9%85-%D8%A7%D9%81%D8%B2%D8%A7%D8%B1-NETBRIGHT-05-19) for understanding the usage.
+
 In PC (Windows or Linux) download Project and open a terminal in src folder and run command `python3 main.py`
 
 ## Credits
