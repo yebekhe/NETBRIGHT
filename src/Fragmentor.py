@@ -11,7 +11,7 @@ import logging
 import configparser
 import random
 
-    
+Tunnel_State = 0
 # Function to send data in fragments
 def send_data_in_fragment(data, sock):
     global random_fragment
@@ -134,7 +134,7 @@ def main():
         server_sock.listen(socket_listen)
         
         with ThreadPoolExecutor(max_workers=128) as executor:
-            while True:
+            while Tunnel_State == 1:
                 client_sock, client_addr = server_sock.accept()
                 client_sock.settimeout(my_socket_timeout)
                 time.sleep(accept_time_sleep)
